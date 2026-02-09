@@ -51,5 +51,6 @@
   "findByArea": "Nach Bereich finden",
   "noAreasFound": "Keine Bereiche gefunden",
   "setAsDefault": "Als Standard festlegen",
-  "defaultDashboardSub": "Dieses Dashboard wird beim Starten der App automatisch geöffnet."
+  "defaultDashboardSub": "Dieses Dashboard wird beim Starten der App automatisch geöffnet.",
+  "cannotDeleteLastDashboard": "Das letzte Dashboard kann nicht gelöscht werden. Mindestens ein Dashboard ist erforderlich."
 }

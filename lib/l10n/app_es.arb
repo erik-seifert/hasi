@@ -51,5 +51,6 @@
   "findByArea": "Buscar por área",
   "noAreasFound": "No se encontraron áreas",
   "setAsDefault": "Establecer como predeterminado",
-  "defaultDashboardSub": "Este panel se abrirá automáticamente al iniciar la aplicación."
+  "defaultDashboardSub": "Este panel se abrirá automáticamente al iniciar la aplicación.",
+  "cannotDeleteLastDashboard": "No se puede eliminar el último panel. Se requiere al menos un panel."
 }

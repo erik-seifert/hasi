@@ -53,20 +53,32 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
           _allAreas = ws.areas;
           _isLoading = false;
         });
+        _updateFilteredEntities();
       }
     }
   }
 
-  List<dynamic> get _filteredEntities {
+  List<dynamic> _filteredEntities = [];
+
+  void _updateFilteredEntities() {
     final ws = context.read<HassWebSocketService>();
-    return _allEntities.where((entity) {
+    _filteredEntities = _allEntities.where((entity) {
       final entityId = entity['entity_id'] as String;
       final friendlyName = (entity['attributes']['friendly_name'] ?? '')
           .toString()
           .toLowerCase();
       final domain = entityId.split('.').first;
       final registryEntry = ws.entityRegistry[entityId];
-      final areaId = registryEntry?['area_id'];
+      String? areaId = registryEntry?['area_id'];
+
+      // Try device registry if no area in entity registry
+      if (areaId == null) {
+        final deviceId = registryEntry?['device_id'];
+        if (deviceId != null) {
+          final device = ws.deviceRegistry[deviceId];
+          areaId = device?['area_id'];
+        }
+      }
 
       // Filter out already selected entities from the discovery list
       if (_selectedEntityIds.contains(entityId)) return false;
@@ -265,6 +277,7 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
                   } else {
                     selectedList.remove(value);
                   }
+                  _updateFilteredEntities();
                 });
               },
             );
@@ -329,7 +342,12 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
             ),
             border: const OutlineInputBorder(),
           ),
-          onChanged: (value) => setState(() => _searchQuery = value),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+              _updateFilteredEntities();
+            });
+          },
         ),
         const SizedBox(height: 16),
         Row(
@@ -340,7 +358,12 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             TextButton.icon(
-              onPressed: () => setState(() => _selectedEntityIds.clear()),
+              onPressed: () {
+                setState(() {
+                  _selectedEntityIds.clear();
+                  _updateFilteredEntities();
+                });
+              },
               icon: const Icon(Icons.layers_clear, size: 16),
               label: Text(l10n.deselectAll),
             ),
@@ -372,6 +395,7 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
               } else {
                 _selectedEntityIds.remove(entityId);
               }
+              _updateFilteredEntities();
             });
           },
         );
@@ -381,6 +405,8 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
 
   Future<void> _showDeleteConfirm() async {
     final l10n = AppLocalizations.of(context)!;
+    final dashService = context.read<DashboardService>();
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -399,7 +425,6 @@ class _EditDashboardScreenState extends State<EditDashboardScreen> {
       ),
     );
     if (confirm == true) {
-      final dashService = context.read<DashboardService>();
       await dashService.deleteDashboard(widget.dashboard.id);
       if (mounted) Navigator.pop(context);
     }

@@ -51,5 +51,6 @@
   "findByArea": "Trouver par zone",
   "noAreasFound": "Aucune zone trouvée",
   "setAsDefault": "Définir par défaut",
-  "defaultDashboardSub": "Ce tableau de bord s'ouvrira automatiquement au démarrage de l'application."
+  "defaultDashboardSub": "Ce tableau de bord s'ouvrira automatiquement au démarrage de l'application.",
+  "cannotDeleteLastDashboard": "Impossible de supprimer le dernier tableau de bord. Au moins un tableau de bord est requis."
 }

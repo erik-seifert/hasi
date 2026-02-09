@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/discovery_service.dart';
 import '../services/auth_service.dart';
 import '../models/ha_instance.dart';
+import 'qr_scanner_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,11 +14,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _urlController = TextEditingController(
+  final _tokenFormKey = GlobalKey<FormState>();
+  final _credentialsFormKey = GlobalKey<FormState>();
+  final _tokenUrlController = TextEditingController(
+    text: 'http://homeassistant.local:8123',
+  );
+  final _credUrlController = TextEditingController(
     text: 'http://homeassistant.local:8123',
   );
   final _tokenController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -31,53 +39,84 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    // Stop scanning when leaving this screen
-    // We need to use context.read, but context might be invalid if unmounted?
-    // In dispose, we can usually access context.read if the widget is still in tree scope technically,
-    // but better to rely on service lifecycle or just let it run?
-    // Actually, we should try to stop it.
-    // However, if we can't easily access the provider here without issues,
-    // we could store a reference in initState.
-    // But context.read is generally safe in dispose if listen:false which read is.
-    // Let's safe guard it.
-
-    // Actually, simply:
-    // context.read<DiscoveryService>().stopScan();
-    // But since the provider is above, it persists.
-    // We definitely want to stop scanning to save battery/network.
-
-    // Note: Calling context.read in dispose is discouraged by some linters but widely used.
-    // A safer way is to save reference in didChangeDependencies, but that's overkill here.
-
+    _tokenUrlController.dispose();
+    _credUrlController.dispose();
+    _tokenController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      // Stop discovery before login attempt to clear resources
-      context.read<DiscoveryService>().stopScan();
-
+  Future<void> _loginWithToken() async {
+    if (_tokenFormKey.currentState!.validate()) {
+      _stopDiscovery();
       setState(() => _isLoading = true);
       final success = await context.read<AuthService>().login(
-        _urlController.text,
+        _tokenUrlController.text,
         _tokenController.text,
       );
-      if (!mounted) return;
-      setState(() => _isLoading = false);
+      _handleLoginResult(success);
+    }
+  }
 
-      if (!success) {
-        final error = context.read<AuthService>().error;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error ?? 'Login failed')));
-        // Restart scan if failed?
-        context.read<DiscoveryService>().startScan();
-      }
+  Future<void> _loginWithCredentials() async {
+    if (_credentialsFormKey.currentState!.validate()) {
+      _stopDiscovery();
+      setState(() => _isLoading = true);
+      final success = await context.read<AuthService>().loginWithCredentials(
+        _credUrlController.text,
+        _usernameController.text,
+        _passwordController.text,
+      );
+      _handleLoginResult(success);
+    }
+  }
+
+  void _stopDiscovery() {
+    context.read<DiscoveryService>().stopScan();
+  }
+
+  void _handleLoginResult(bool success) {
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (!success) {
+      final error = context.read<AuthService>().error;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error ?? 'Login failed')));
+      context.read<DiscoveryService>().startScan();
     }
   }
 
   void _onInstanceSelected(HAInstance instance) {
-    _urlController.text = instance.url;
+    setState(() {
+      _tokenUrlController.text = instance.url;
+      _credUrlController.text = instance.url;
+    });
+  }
+
+  Future<void> _scanQR() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const QRScannerScreen()),
+      );
+
+      if (result != null && result is String) {
+        setState(() {
+          // If it's a URL-like structure, set URL, else set token
+          // Simple heuristic: if it contains "http", assume it's URL or JSON with URL
+          // But user said "scan QR for long life token". This implies just the token string potentially.
+          if (result.startsWith('http')) {
+            _tokenUrlController.text = result;
+            _credUrlController.text = result;
+          } else {
+            _tokenController.text = result;
+          }
+        });
+      }
+    }
   }
 
   @override
@@ -88,73 +127,93 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(title: const Text('Connect to Home Assistant')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Discovery Section
-                Text(
-                  'Discovery',
-                  style: Theme.of(context).textTheme.titleLarge,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Discovery Section
+              Text('Discovery', style: Theme.of(context).textTheme.titleLarge),
+              if (discoveryService.isScanning) const LinearProgressIndicator(),
+              const SizedBox(height: 10),
+              if (discoveryService.instances.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Text('Searching for Home Assistant instances...'),
+                )
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: discoveryService.instances.length,
+                  itemBuilder: (context, index) {
+                    final instance = discoveryService.instances[index];
+                    return Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.home),
+                        title: Text(instance.name),
+                        subtitle: Text(instance.url),
+                        onTap: () => _onInstanceSelected(instance),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      ),
+                    );
+                  },
                 ),
-                if (discoveryService.isScanning)
-                  const LinearProgressIndicator(),
-                const SizedBox(height: 10),
-                if (discoveryService.instances.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Text('Searching for Home Assistant instances...'),
-                  )
-                else
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: discoveryService.instances.length,
-                    itemBuilder: (context, index) {
-                      final instance = discoveryService.instances[index];
-                      return Card(
-                        child: ListTile(
-                          leading: const Icon(Icons.home),
-                          title: Text(instance.name),
-                          subtitle: Text(instance.url),
-                          onTap: () => _onInstanceSelected(instance),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                const SizedBox(height: 20),
-                const Divider(),
-                const SizedBox(height: 20),
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 20),
 
-                // Manual Entry Section
-                Text(
-                  'Manual Connection',
-                  style: Theme.of(context).textTheme.titleLarge,
+              // Tabs
+              DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    const TabBar(
+                      tabs: [
+                        Tab(text: 'Token'),
+                        Tab(text: 'Credentials'),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      // Using a constrained height or letting it grow?
+                      // TabBarView requires bounded height.
+                      // Since we are in SingleChildScrollView, we can't just use Expanded.
+                      // We'll wrap TabBarView in a SizedBox with a reasonable height or use a custom solution.
+                      // Alternatively, avoid TabBarView and use a state variable to switch content.
+                      // Switching content is safer inside SingleChildScrollView.
+                      height: 400,
+                      child: TabBarView(
+                        children: [
+                          _buildTokenTab(context),
+                          _buildCredentialsTab(context),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _urlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Home Assistant URL',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.link),
-                  ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Please enter URL'
-                      : null,
-                ),
-                const SizedBox(height: 15),
-                TextFormField(
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTokenTab(BuildContext context) {
+    return Form(
+      key: _tokenFormKey,
+      child: Column(
+        children: [
+          _buildUrlField(_tokenUrlController),
+          const SizedBox(height: 15),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
                   controller: _tokenController,
                   decoration: const InputDecoration(
                     labelText: 'Long-Lived Access Token',
-                    hintText: 'Paste your token here',
+                    hintText: 'Paste token',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.vpn_key),
                   ),
@@ -164,26 +223,98 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? 'Please enter token'
                       : null,
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _login,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.login),
-                  label: const Text('Connect'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+              ),
+              if (Platform.isAndroid || Platform.isIOS) ...[
+                const SizedBox(width: 8),
+                IconButton.filledTonal(
+                  onPressed: _scanQR,
+                  icon: const Icon(Icons.qr_code_scanner),
+                  tooltip: 'Scan QR Code',
                 ),
               ],
+            ],
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: _isLoading ? null : _loginWithToken,
+            icon: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.login),
+            label: const Text('Connect with Token'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              minimumSize: const Size(double.infinity, 50),
             ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildCredentialsTab(BuildContext context) {
+    return Form(
+      key: _credentialsFormKey,
+      child: Column(
+        children: [
+          _buildUrlField(_credUrlController),
+          const SizedBox(height: 15),
+          TextFormField(
+            controller: _usernameController,
+            decoration: const InputDecoration(
+              labelText: 'Username',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.person),
+            ),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Please enter username' : null,
+          ),
+          const SizedBox(height: 15),
+          TextFormField(
+            controller: _passwordController,
+            decoration: const InputDecoration(
+              labelText: 'Password',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.lock),
+            ),
+            obscureText: true,
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Please enter password' : null,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: _isLoading ? null : _loginWithCredentials,
+            icon: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.login),
+            label: const Text('Connect with Credentials'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              minimumSize: const Size(double.infinity, 50),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUrlField(TextEditingController controller) {
+    return TextFormField(
+      controller: controller,
+      decoration: const InputDecoration(
+        labelText: 'Home Assistant URL',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.link),
+      ),
+      validator: (value) =>
+          value == null || value.isEmpty ? 'Please enter URL' : null,
     );
   }
 }

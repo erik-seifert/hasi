@@ -171,4 +171,43 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get defaultDashboardSub =>
       'Este panel se abrirá automáticamente al iniciar la aplicación.';
+
+  @override
+  String get cannotDeleteLastDashboard =>
+      'No se puede eliminar el último panel. Se requiere al menos un panel.';
+
+  @override
+  String get setupDashboards => 'Setup Dashboards';
+
+  @override
+  String get createDashboards => 'Create Dashboards';
+
+  @override
+  String get noAreasFoundSetup => 'No Areas Found';
+
+  @override
+  String get noAreasFoundSetupSub =>
+      'Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.';
+
+  @override
+  String get createEmptyDashboard => 'Create Empty Dashboard';
+
+  @override
+  String get welcomeToHasi => 'Welcome to Hasi!';
+
+  @override
+  String get selectAreasToCreateDashboards =>
+      'Select areas to automatically create dashboards for each one.';
+
+  @override
+  String get areasSelected => 'areas selected';
+
+  @override
+  String get entity => 'entity';
+
+  @override
+  String get entities => 'entities';
+
+  @override
+  String get editMode => 'Edit Mode';
 }

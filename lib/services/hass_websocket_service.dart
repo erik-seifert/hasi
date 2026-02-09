@@ -11,6 +11,7 @@ class HassWebSocketService extends ChangeNotifier {
   StreamSubscription? _subscription;
   bool _isConnected = false;
   bool _isAuthenticated = false;
+  bool _isReady = false;
   int _idCounter = 1;
   final Map<int, Completer<dynamic>> _pendingRequests = {};
   final Map<String, dynamic> _entities = {};
@@ -27,6 +28,7 @@ class HassWebSocketService extends ChangeNotifier {
 
   bool get isConnected => _isConnected;
   bool get isAuthenticated => _isAuthenticated;
+  bool get isReady => _isReady;
   Map<String, dynamic> get entitiesMap => _entities;
   List<dynamic> get entities => _entities.values.toList();
   List<dynamic> get areas => _areas;
@@ -163,6 +165,7 @@ class HassWebSocketService extends ChangeNotifier {
         for (var state in states) {
           _entities[state['entity_id']] = state;
         }
+        _isReady = true;
         notifyListeners();
       }
     } catch (e) {
@@ -251,8 +254,13 @@ class HassWebSocketService extends ChangeNotifier {
     }
     _eventController.add(null);
     _cleanup();
+    _entities.clear();
+    _entityRegistry.clear();
+    _deviceRegistry.clear();
+    _areas.clear();
     _isConnected = false;
     _isAuthenticated = false;
+    _isReady = false;
     notifyListeners();
   }
 

@@ -419,6 +419,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This dashboard will open automatically when you start the app.'**
   String get defaultDashboardSub;
+
+  /// No description provided for @cannotDeleteLastDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete the last dashboard. At least one dashboard is required.'**
+  String get cannotDeleteLastDashboard;
+
+  /// No description provided for @setupDashboards.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup Dashboards'**
+  String get setupDashboards;
+
+  /// No description provided for @createDashboards.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Dashboards'**
+  String get createDashboards;
+
+  /// No description provided for @noAreasFoundSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'No Areas Found'**
+  String get noAreasFoundSetup;
+
+  /// No description provided for @noAreasFoundSetupSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.'**
+  String get noAreasFoundSetupSub;
+
+  /// No description provided for @createEmptyDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Empty Dashboard'**
+  String get createEmptyDashboard;
+
+  /// No description provided for @welcomeToHasi.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Hasi!'**
+  String get welcomeToHasi;
+
+  /// No description provided for @selectAreasToCreateDashboards.
+  ///
+  /// In en, this message translates to:
+  /// **'Select areas to automatically create dashboards for each one.'**
+  String get selectAreasToCreateDashboards;
+
+  /// No description provided for @areasSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'areas selected'**
+  String get areasSelected;
+
+  /// No description provided for @entity.
+  ///
+  /// In en, this message translates to:
+  /// **'entity'**
+  String get entity;
+
+  /// No description provided for @entities.
+  ///
+  /// In en, this message translates to:
+  /// **'entities'**
+  String get entities;
+
+  /// No description provided for @editMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Mode'**
+  String get editMode;
 }
 
 class _AppLocalizationsDelegate

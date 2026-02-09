@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'custom_widget.dart';
 
 class EntityConfig {
   final String? nameOverride;
@@ -25,6 +26,7 @@ class Dashboard {
   final List<String> orderedEntityIds;
   final List<List<String>> columns;
   final Map<String, EntityConfig> entityConfigs;
+  final Map<String, CustomWidget> customWidgets; // New field for custom widgets
   final int columnCount;
 
   Dashboard({
@@ -34,6 +36,7 @@ class Dashboard {
     this.orderedEntityIds = const [],
     this.columns = const [],
     this.entityConfigs = const {},
+    this.customWidgets = const {},
     this.columnCount = 2,
   });
 
@@ -47,6 +50,9 @@ class Dashboard {
       'entityConfigs': entityConfigs.map(
         (key, value) => MapEntry(key, value.toMap()),
       ),
+      'customWidgets': customWidgets.map(
+        (key, value) => MapEntry(key, value.toJson()),
+      ),
       'columnCount': columnCount,
     };
   }
@@ -56,6 +62,15 @@ class Dashboard {
     final entityConfigs = configsMap.map(
       (key, value) =>
           MapEntry(key, EntityConfig.fromMap(Map<String, dynamic>.from(value))),
+    );
+
+    final customWidgetsMap =
+        map['customWidgets'] as Map<String, dynamic>? ?? {};
+    final customWidgets = customWidgetsMap.map(
+      (key, value) => MapEntry(
+        key,
+        CustomWidget.fromJson(Map<String, dynamic>.from(value)),
+      ),
     );
 
     final columnsData = map['columns'] as List<dynamic>?;
@@ -71,6 +86,7 @@ class Dashboard {
       orderedEntityIds: List<String>.from(map['orderedEntityIds'] ?? []),
       columns: columns,
       entityConfigs: entityConfigs,
+      customWidgets: customWidgets,
       columnCount: map['columnCount'] ?? 2,
     );
   }
@@ -87,6 +103,7 @@ class Dashboard {
     List<String>? orderedEntityIds,
     List<List<String>>? columns,
     Map<String, EntityConfig>? entityConfigs,
+    Map<String, CustomWidget>? customWidgets,
     int? columnCount,
   }) {
     return Dashboard(
@@ -96,6 +113,7 @@ class Dashboard {
       orderedEntityIds: orderedEntityIds ?? this.orderedEntityIds,
       columns: columns ?? this.columns,
       entityConfigs: entityConfigs ?? this.entityConfigs,
+      customWidgets: customWidgets ?? this.customWidgets,
       columnCount: columnCount ?? this.columnCount,
     );
   }

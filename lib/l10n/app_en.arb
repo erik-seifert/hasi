@@ -51,5 +51,17 @@
   "findByArea": "Find by Area",
   "noAreasFound": "No areas found",
   "setAsDefault": "Set as Default",
-  "defaultDashboardSub": "This dashboard will open automatically when you start the app."
+  "defaultDashboardSub": "This dashboard will open automatically when you start the app.",
+  "cannotDeleteLastDashboard": "Cannot delete the last dashboard. At least one dashboard is required.",
+  "setupDashboards": "Setup Dashboards",
+  "createDashboards": "Create Dashboards",
+  "noAreasFoundSetup": "No Areas Found",
+  "noAreasFoundSetupSub": "Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.",
+  "createEmptyDashboard": "Create Empty Dashboard",
+  "welcomeToHasi": "Welcome to Hasi!",
+  "selectAreasToCreateDashboards": "Select areas to automatically create dashboards for each one.",
+  "areasSelected": "areas selected",
+  "entity": "entity",
+  "entities": "entities",
+  "editMode": "Edit Mode"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:nsd/nsd.dart';
 import '../models/ha_instance.dart';
 import 'logger_service.dart';
@@ -13,19 +14,40 @@ class DiscoveryService extends ChangeNotifier {
 
   Future<void> startScan() async {
     if (_isScanning) return;
+
+    // On Linux/Windows, discovery might fail if dependencies aren't installed.
+    // We'll try, but handle errors gracefully.
+
     _isScanning = true;
     _instances.clear();
     notifyListeners();
 
     try {
-      _discovery = await startDiscovery('_home-assistant._tcp');
+      _discovery = await startDiscovery(
+        '_home-assistant._tcp',
+        autoResolve: true,
+      );
       _discovery!.addListener(() {
         _updateInstances();
       });
       // Initial list check
       _updateInstances();
+    } on PlatformException catch (e) {
+      if (e.code == 'MissingPluginException' ||
+          e.message?.contains('MissingPluginException') == true) {
+        AppLogger.w("Discovery not supported on this platform: ${e.message}");
+      } else {
+        AppLogger.e("Discovery platform error: $e");
+      }
+      _isScanning = false;
+      notifyListeners();
     } catch (e) {
-      AppLogger.e("Discovery error: $e");
+      // NsdError often wraps the underlying exception
+      if (e.toString().contains("MissingPluginException")) {
+        AppLogger.w("Discovery plugin missing or not configured: $e");
+      } else {
+        AppLogger.e("Discovery error: $e");
+      }
       _isScanning = false;
       notifyListeners();
     }

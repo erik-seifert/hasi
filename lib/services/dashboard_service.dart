@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/dashboard.dart';
+import '../models/custom_widget.dart';
 import 'package:uuid/uuid.dart';
 
 class DashboardService extends ChangeNotifier {
@@ -30,24 +31,17 @@ class DashboardService extends ChangeNotifier {
       }
     }
 
-    if (_dashboards.isEmpty) {
-      // Create a default dashboard
-      final defaultDash = Dashboard(
-        id: const Uuid().v4(),
-        name: 'Lights & Climate',
-        entityIds: [], // User needs to select entities now
-      );
-      _dashboards.add(defaultDash);
-      await save();
-    }
-
     _defaultDashboardId = prefs.getString('default_dashboard_id');
 
-    // Always start with the default dashboard if set, otherwise last active
-    _activeDashboardId =
-        _defaultDashboardId ??
-        prefs.getString('active_dashboard_id') ??
-        _dashboards.first.id;
+    // Set active dashboard if we have any
+    if (_dashboards.isNotEmpty) {
+      _activeDashboardId =
+          _defaultDashboardId ??
+          prefs.getString('active_dashboard_id') ??
+          _dashboards.first.id;
+    } else {
+      _activeDashboardId = null;
+    }
 
     notifyListeners();
   }
@@ -98,18 +92,23 @@ class DashboardService extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteDashboard(String id) async {
-    if (_dashboards.length <= 1) return; // Keep at least one
+  Future<bool> deleteDashboard(String id) async {
     _dashboards.removeWhere((d) => d.id == id);
+
+    // If we deleted the active dashboard, switch to another or clear
     if (_activeDashboardId == id) {
-      _activeDashboardId = _dashboards.first.id;
+      _activeDashboardId = _dashboards.isNotEmpty ? _dashboards.first.id : null;
     }
+
+    // If we deleted the default dashboard, clear it
     if (_defaultDashboardId == id) {
       await setDefaultDashboard(null);
     }
+
     await save();
     await _saveActiveId();
     notifyListeners();
+    return true;
   }
 
   Future<void> setActiveDashboard(String id) async {
@@ -129,5 +128,78 @@ class DashboardService extends ChangeNotifier {
     if (_activeDashboardId != null) {
       await prefs.setString('active_dashboard_id', _activeDashboardId!);
     }
+  }
+
+  // Custom widget management
+  Future<void> addCustomWidget(String dashboardId, CustomWidget widget) async {
+    final index = _dashboards.indexWhere((d) => d.id == dashboardId);
+    if (index == -1) return;
+
+    final dashboard = _dashboards[index];
+    final updatedCustomWidgets = Map<String, CustomWidget>.from(
+      dashboard.customWidgets,
+    );
+    updatedCustomWidgets[widget.id] = widget;
+
+    // Add to columns (first column by default)
+    final updatedColumns = List<List<String>>.from(dashboard.columns);
+    if (updatedColumns.isEmpty) {
+      updatedColumns.add([widget.id]);
+    } else {
+      updatedColumns[0] = [...updatedColumns[0], widget.id];
+    }
+
+    _dashboards[index] = dashboard.copyWith(
+      customWidgets: updatedCustomWidgets,
+      columns: updatedColumns,
+    );
+
+    await save();
+    notifyListeners();
+  }
+
+  Future<void> updateCustomWidget(
+    String dashboardId,
+    CustomWidget widget,
+  ) async {
+    final index = _dashboards.indexWhere((d) => d.id == dashboardId);
+    if (index == -1) return;
+
+    final dashboard = _dashboards[index];
+    final updatedCustomWidgets = Map<String, CustomWidget>.from(
+      dashboard.customWidgets,
+    );
+    updatedCustomWidgets[widget.id] = widget;
+
+    _dashboards[index] = dashboard.copyWith(
+      customWidgets: updatedCustomWidgets,
+    );
+
+    await save();
+    notifyListeners();
+  }
+
+  Future<void> removeCustomWidget(String dashboardId, String widgetId) async {
+    final index = _dashboards.indexWhere((d) => d.id == dashboardId);
+    if (index == -1) return;
+
+    final dashboard = _dashboards[index];
+    final updatedCustomWidgets = Map<String, CustomWidget>.from(
+      dashboard.customWidgets,
+    );
+    updatedCustomWidgets.remove(widgetId);
+
+    // Remove from columns
+    final updatedColumns = dashboard.columns.map((col) {
+      return col.where((id) => id != widgetId).toList();
+    }).toList();
+
+    _dashboards[index] = dashboard.copyWith(
+      customWidgets: updatedCustomWidgets,
+      columns: updatedColumns,
+    );
+
+    await save();
+    notifyListeners();
   }
 }
