@@ -30,7 +30,6 @@ architectures:
 apps:
   hasi:
     command: hasi
-    icon: gui/icon.png
     extensions: [gnome]
     plugs:
       - home
