@@ -2,7 +2,7 @@
 Name=Hasi
 Comment=Home Assistant Interface
 Exec=hasi
-Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/hasi.png
+Icon=${SNAP}/usr/share/icons/hicolor/512x512/apps/hasi.png
 Terminal=false
 Type=Application
 Categories=Utility;Network;

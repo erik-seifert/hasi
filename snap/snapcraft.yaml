@@ -1,6 +1,9 @@
 name: hasi
 base: core22
-version: '1.0.0'
+version: git
+website: https://github.com/erik-seifert/hasi
+source-code: https://github.com/erik-seifert/hasi
+issues: https://github.com/erik-seifert/hasi/issues
 summary: Home Assistant Interface - A Flutter-based Home Assistant client
 description: |
   Hasi is a modern, cross-platform Home Assistant client built with Flutter.
@@ -27,6 +30,7 @@ architectures:
 apps:
   hasi:
     command: hasi
+    icon: gui/icon.png
     extensions: [gnome]
     plugs:
       - home
@@ -92,13 +96,14 @@ parts:
         chmod +x $CRAFT_PART_INSTALL/bin/hasi
       fi
 
+  # Store category: Devices and IoT
   # Desktop integration
   desktop-file:
     plugin: dump
     source: snap/gui
     organize:
       hasi.desktop: usr/share/applications/hasi.desktop
-      hasi.png: usr/share/icons/hicolor/256x256/apps/hasi.png
+      icon.png: usr/share/icons/hicolor/512x512/apps/hasi.png
 
 layout:
   /usr/share/libdrm:
