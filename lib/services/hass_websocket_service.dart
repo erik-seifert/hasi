@@ -25,6 +25,13 @@ class HassWebSocketService extends ChangeNotifier {
   // connection details
   String? _url;
   String? _token;
+  bool _isManuallyDisconnected = false;
+
+  // Heartbeat and Reconnection
+  Timer? _pingTimer;
+  Timer? _reconnectTimer;
+  static const _pingInterval = Duration(seconds: 30);
+  static const _reconnectDelay = Duration(seconds: 5);
 
   bool get isConnected => _isConnected;
   bool get isAuthenticated => _isAuthenticated;
@@ -36,12 +43,20 @@ class HassWebSocketService extends ChangeNotifier {
   Map<String, dynamic> get deviceRegistry => _deviceRegistry;
 
   Future<void> connect(String baseUrl, String token) async {
-    // If already checking/connected to same URL/token, return?
-    // For now, simplify: disconnect if exists, then connect.
-    await disconnect();
-
+    _isManuallyDisconnected = false;
     _url = baseUrl.replaceFirst(RegExp(r'^http'), 'ws');
     _token = token;
+
+    await _establishConnection();
+  }
+
+  Future<void> _establishConnection() async {
+    if (_url == null || _token == null) return;
+
+    // If already connected, do nothing
+    if (_isConnected && _channel != null) return;
+
+    _cleanup();
 
     try {
       final wsUrl = Uri.parse('$_url/api/websocket');
@@ -57,23 +72,59 @@ class HassWebSocketService extends ChangeNotifier {
         },
         onDone: () {
           AppLogger.i('WebSocket connection closed');
-          _isConnected = false;
-          _isAuthenticated = false;
-          notifyListeners();
-          _cleanup();
+          _handleDisconnect();
         },
         onError: (error) {
           AppLogger.e('WebSocket error: $error');
-          _isConnected = false;
-          _isAuthenticated = false;
-          notifyListeners();
-          _cleanup();
+          _handleDisconnect();
         },
       );
+
+      _startPingTimer();
     } catch (e) {
       AppLogger.e('Connection failed: $e');
-      _isConnected = false;
-      notifyListeners();
+      _handleDisconnect();
+    }
+  }
+
+  void _handleDisconnect() {
+    _isConnected = false;
+    _isAuthenticated = false;
+    _isReady = false;
+    _stopPingTimer();
+    notifyListeners();
+    _cleanup();
+
+    if (!_isManuallyDisconnected) {
+      _scheduleReconnection();
+    }
+  }
+
+  void _scheduleReconnection() {
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer(_reconnectDelay, () {
+      if (!_isConnected && !_isManuallyDisconnected) {
+        AppLogger.i('Attempting to reconnect...');
+        _establishConnection();
+      }
+    });
+  }
+
+  void _startPingTimer() {
+    _stopPingTimer();
+    _pingTimer = Timer.periodic(_pingInterval, (_) {
+      _sendPing();
+    });
+  }
+
+  void _stopPingTimer() {
+    _pingTimer?.cancel();
+    _pingTimer = null;
+  }
+
+  void _sendPing() {
+    if (_isConnected) {
+      _sendJson({'id': _idCounter++, 'type': 'ping'});
     }
   }
 
@@ -96,6 +147,8 @@ class HassWebSocketService extends ChangeNotifier {
     } else if (type == 'auth_invalid') {
       AppLogger.w('Authentication failed: ${data['message']}');
       disconnect();
+    } else if (type == 'pong') {
+      // Received pong, connection is alive
     } else if (type == 'result') {
       final id = data['id'];
       if (_pendingRequests.containsKey(id)) {
@@ -117,9 +170,6 @@ class HassWebSocketService extends ChangeNotifier {
         }
       }
     }
-
-    // Notify specifically for data changes if needed,
-    // but usually specific subscriptions handle their own callbacks.
   }
 
   void _sendAuth() {
@@ -248,6 +298,10 @@ class HassWebSocketService extends ChangeNotifier {
   }
 
   Future<void> disconnect() async {
+    _isManuallyDisconnected = true;
+    _reconnectTimer?.cancel();
+    _stopPingTimer();
+
     if (_channel != null) {
       await _channel!.sink.close(status.normalClosure);
       _channel = null;
@@ -277,8 +331,24 @@ class HassWebSocketService extends ChangeNotifier {
     _pendingRequests.clear();
   }
 
+  /// Explicitly check connection and reconnect if needed.
+  /// Useful when app resumes from background.
+  void reconnectIfNeeded() {
+    if (_isManuallyDisconnected) return;
+
+    if (!_isConnected || _channel == null) {
+      AppLogger.i('Reconnecting after lifecycle change...');
+      _establishConnection();
+    } else {
+      // Even if connected, send a ping to verify
+      _sendPing();
+    }
+  }
+
   @override
   void dispose() {
+    _reconnectTimer?.cancel();
+    _stopPingTimer();
     disconnect();
     super.dispose();
   }

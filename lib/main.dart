@@ -10,8 +10,7 @@ import 'services/discovery_service.dart';
 import 'services/hass_websocket_service.dart';
 import 'services/dashboard_service.dart';
 import 'services/theme_service.dart';
-import 'services/notification_service.dart';
-import 'services/alert_service.dart';
+
 import 'services/voice_service.dart';
 import 'l10n/app_localizations.dart';
 
@@ -34,11 +33,8 @@ void main() async {
   final themeService = ThemeService();
   await themeService.init();
 
-  final notificationService = NotificationService();
-  await notificationService.init();
-
   final wsService = HassWebSocketService();
-  final alertService = AlertService(wsService, notificationService);
+
   final voiceService = VoiceService(wsService);
 
   runApp(
@@ -49,8 +45,7 @@ void main() async {
         ChangeNotifierProvider.value(value: wsService),
         ChangeNotifierProvider.value(value: dashboardService),
         ChangeNotifierProvider.value(value: themeService),
-        ChangeNotifierProvider.value(value: notificationService),
-        ChangeNotifierProvider.value(value: alertService),
+
         ChangeNotifierProvider.value(value: voiceService),
       ],
       child: const HasiApp(),
