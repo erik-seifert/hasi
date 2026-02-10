@@ -1,0 +1,37 @@
+changelog:
+  exclude:
+    labels:
+      - ignore
+    authors:
+      - dependabot
+      - github-actions
+  categories:
+    - title: "✨ New Features"
+      labels:
+        - feature
+        - enhancement
+        - new
+    - title: "🐛 Bug Fixes"
+      labels:
+        - fix
+        - bug
+        - bugfix
+        - hotfix
+    - title: "📚 Documentation"
+      labels:
+        - documentation
+        - doc
+        - docs
+    - title: "🧰 Maintenance"
+      labels:
+        - maintenance
+        - chore
+        - dependencies
+        - refactor
+        - test
+        - tests
+    - title: "⚡ Performance Improvements"
+      labels:
+        - performance
+        - perf
+        - optimization
