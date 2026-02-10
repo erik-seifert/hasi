@@ -2,7 +2,9 @@
 
 A modern, cross-platform Home Assistant client built with Flutter. Hasi provides a beautiful and intuitive interface to control your smart home devices, view dashboards, and interact with your Home Assistant instance.
 
-![Hasi Icon](snap/gui/hasi.png)
+<p align="center">
+  <img src="assets/logo.png" width="128" alt="Hasi Logo" />
+</p>
 
 ## Features
 
