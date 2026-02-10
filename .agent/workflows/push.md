@@ -3,6 +3,6 @@ description: Push to github
 ---
 
 - Use github cli (already installed)
-- Create a new pull request to merge develop into main (only remote)
+- Create a new pull request to merge develop into main with github cli
 - Add small changelog as PL message
-- Open a browser (chrome) to point to new PL
+- Show the link for the PR
