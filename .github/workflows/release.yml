@@ -158,11 +158,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Find Snap File
+        id: find_snap
+        run: echo "SNAP_FILE=$(find release_files -name '*.snap' | head -n 1)" >> $GITHUB_ENV
+
       - name: Publish to Snap Store
         if: startsWith(github.ref, 'refs/tags/v')
         uses: snapcore/action-publish@v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
         with:
-          snap: release_files/*.snap
+          snap: ${{ env.SNAP_FILE }}
           release: stable
