@@ -61,8 +61,14 @@ class ThemeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  ThemeData get themeData {
-    final cardBorderColor = _isDarkMode
+  ThemeData get themeData => _createTheme(_isDarkMode);
+
+  ThemeData getLightTheme() => _createTheme(false);
+
+  ThemeData getDarkTheme() => _createTheme(true);
+
+  ThemeData _createTheme(bool isDark) {
+    final cardBorderColor = isDark
         ? Colors.white.withValues(alpha: 0.1)
         : Colors.black.withValues(alpha: 0.05);
 
@@ -70,12 +76,12 @@ class ThemeService extends ChangeNotifier {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: _seedColor,
-        brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+        brightness: isDark ? Brightness.dark : Brightness.light,
       ),
-      scaffoldBackgroundColor: _isDarkMode
+      scaffoldBackgroundColor: isDark
           ? const Color(0xFF0A1128) // Dark Blue
           : const Color(0xFFEBF3FF), // Light Blue
-      cardColor: _isDarkMode
+      cardColor: isDark
           ? (_useGlassmorphism
                 ? Colors.white.withValues(alpha: 0.08)
                 : const Color(0xFF1E1E1E))
@@ -89,7 +95,7 @@ class ThemeService extends ChangeNotifier {
           side: BorderSide(color: cardBorderColor, width: 1),
         ),
         margin: EdgeInsets.zero,
-        color: _isDarkMode
+        color: isDark
             ? (_useGlassmorphism
                   ? Colors.white.withValues(alpha: 0.08)
                   : const Color(0xFF1E1E1E))

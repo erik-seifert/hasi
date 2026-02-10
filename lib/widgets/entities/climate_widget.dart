@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../../services/hass_websocket_service.dart';
 
@@ -36,6 +37,7 @@ class ClimateWidget extends StatelessWidget {
 
     final showHvacMode = config?.options['show_hvac_mode'] ?? true;
     final showPresetMode = config?.options['show_preset_mode'] ?? true;
+    final showFanMode = config?.options['show_fan_mode'] ?? true;
 
     Color themeColor = _getStateColor(state);
 
@@ -210,7 +212,7 @@ class ClimateWidget extends StatelessWidget {
                 ),
               ),
             ],
-            if (fanModes.isNotEmpty) ...[
+            if (showFanMode && fanModes.isNotEmpty) ...[
               const SizedBox(height: 16),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -355,10 +357,50 @@ class ClimateWidget extends StatelessWidget {
 
 @widgetbook.UseCase(name: 'Full Featured', type: ClimateWidget)
 Widget buildClimateWidgetFullUseCase(BuildContext context) {
-  return const ClimateWidget(entityId: 'climate.nest');
+  return ClimateWidget(
+    entityId: 'climate.nest',
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'Living Room',
+      ),
+      options: {
+        'show_hvac_mode': context.knobs.boolean(
+          label: 'Show HVAC Mode',
+          initialValue: true,
+        ),
+        'show_preset_mode': context.knobs.boolean(
+          label: 'Show Preset Mode',
+          initialValue: true,
+        ),
+        'show_fan_mode': context.knobs.boolean(
+          label: 'Show Fan Mode',
+          initialValue: true,
+        ),
+      },
+    ),
+  );
 }
 
 @widgetbook.UseCase(name: 'Simple', type: ClimateWidget)
 Widget buildClimateWidgetSimpleUseCase(BuildContext context) {
-  return const ClimateWidget(entityId: 'climate.simple');
+  return ClimateWidget(
+    entityId: 'climate.simple',
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'Guest Room',
+      ),
+      options: {
+        'show_hvac_mode': context.knobs.boolean(
+          label: 'Show HVAC Mode',
+          initialValue: false,
+        ),
+        'show_preset_mode': context.knobs.boolean(
+          label: 'Show Preset Mode',
+          initialValue: false,
+        ),
+      },
+    ),
+  );
 }

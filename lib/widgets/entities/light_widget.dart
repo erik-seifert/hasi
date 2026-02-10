@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../../services/hass_websocket_service.dart';
@@ -392,10 +393,46 @@ class _ColorDot extends StatelessWidget {
 
 @widgetbook.UseCase(name: 'RGB Light', type: LightWidget)
 Widget buildLightWidgetRGBUseCase(BuildContext context) {
-  return const LightWidget(entityId: 'light.rgb_lamp');
+  return LightWidget(
+    entityId: 'light.rgb_lamp',
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'RGB Lamp',
+      ),
+      options: {
+        'show_brightness': context.knobs.boolean(
+          label: 'Show Brightness',
+          initialValue: true,
+        ),
+        'show_color': context.knobs.boolean(
+          label: 'Show Color',
+          initialValue: true,
+        ),
+      },
+    ),
+  );
 }
 
 @widgetbook.UseCase(name: 'Color Temp Light', type: LightWidget)
 Widget buildLightWidgetTempUseCase(BuildContext context) {
-  return const LightWidget(entityId: 'light.kitchen');
+  return LightWidget(
+    entityId: 'light.kitchen',
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'Kitchen Light',
+      ),
+      options: {
+        'show_brightness': context.knobs.boolean(
+          label: 'Show Brightness',
+          initialValue: true,
+        ),
+        'show_color': context.knobs.boolean(
+          label: 'Show Color',
+          initialValue: true,
+        ),
+      },
+    ),
+  );
 }

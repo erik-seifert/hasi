@@ -182,8 +182,3 @@ class _QuickTestButton extends StatelessWidget {
     );
   }
 }
-
-@widgetbook.UseCase(name: 'Default', type: TtsTestWidget)
-Widget buildTtsTestWidgetUseCase(BuildContext context) {
-  return const TtsTestWidget();
-}

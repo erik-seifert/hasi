@@ -28,10 +28,6 @@ import 'package:hasi/widgets/entities/weather_widget.dart'
     as _hasi_widgets_entities_weather_widget;
 import 'package:hasi/widgets/history_graph_widget.dart'
     as _hasi_widgets_history_graph_widget;
-import 'package:hasi/widgets/tts_test_widget.dart'
-    as _hasi_widgets_tts_test_widget;
-import 'package:hasi/widgets/voice_assistant_widget.dart'
-    as _hasi_widgets_voice_assistant_widget;
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
@@ -63,25 +59,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Default',
             builder: _hasi_widgets_history_graph_widget
                 .buildHistoryGraphWidgetUseCase,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
-        name: 'TtsTestWidget',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Default',
-            builder: _hasi_widgets_tts_test_widget.buildTtsTestWidgetUseCase,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
-        name: 'VoiceAssistantWidget',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Default',
-            builder: _hasi_widgets_voice_assistant_widget
-                .buildVoiceAssistantWidgetUseCase,
           ),
         ],
       ),
