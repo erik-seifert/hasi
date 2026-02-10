@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../services/voice_service.dart';
 
 class VoiceAssistantWidget extends StatefulWidget {
@@ -104,8 +105,10 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
                       color: isUser
                           ? Theme.of(
                               context,
-                            ).colorScheme.primary.withOpacity(0.8)
-                          : Theme.of(context).colorScheme.surfaceVariant,
+                            ).colorScheme.primary.withValues(alpha: 0.8)
+                          : Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Text(
@@ -146,19 +149,24 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
               const SizedBox(width: 8),
               FloatingActionButton.small(
                 onPressed: () {
-                  // For now, TTS is supported, let's show an indicator
                   if (voiceService.isSpeaking) {
                     voiceService.stop();
+                  } else if (voiceService.isListening) {
+                    voiceService.stopListening();
                   } else {
-                    // Start listening would go here
-                    _addMessage(
-                      "Listening... (System Voice support coming soon for Linux)",
-                      false,
-                    );
+                    voiceService.startListening();
+                    _addMessage("Listening...", false);
                   }
                 },
-                backgroundColor: voiceService.isSpeaking ? Colors.red : null,
-                child: Icon(voiceService.isSpeaking ? Icons.stop : Icons.mic),
+                backgroundColor:
+                    voiceService.isSpeaking || voiceService.isListening
+                    ? Colors.red
+                    : null,
+                child: Icon(
+                  voiceService.isSpeaking
+                      ? Icons.stop
+                      : (voiceService.isListening ? Icons.mic_off : Icons.mic),
+                ),
               ),
             ],
           ),
@@ -167,4 +175,9 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
       ),
     );
   }
+}
+
+@widgetbook.UseCase(name: 'Default', type: VoiceAssistantWidget)
+Widget buildVoiceAssistantWidgetUseCase(BuildContext context) {
+  return const VoiceAssistantWidget();
 }

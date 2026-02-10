@@ -491,6 +491,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Mode'**
   String get editMode;
+
+  /// No description provided for @connectToHA.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Home Assistant'**
+  String get connectToHA;
+
+  /// No description provided for @discovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovery'**
+  String get discovery;
+
+  /// No description provided for @searchingForHA.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for Home Assistant instances...'**
+  String get searchingForHA;
+
+  /// No description provided for @token.
+  ///
+  /// In en, this message translates to:
+  /// **'Token'**
+  String get token;
+
+  /// No description provided for @credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials'**
+  String get credentials;
+
+  /// No description provided for @longLivedToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-Lived Access Token'**
+  String get longLivedToken;
+
+  /// No description provided for @pasteToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste token'**
+  String get pasteToken;
+
+  /// No description provided for @scanQRCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR Code'**
+  String get scanQRCode;
+
+  /// No description provided for @connectWithToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with Token'**
+  String get connectWithToken;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @connectWithCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with Credentials'**
+  String get connectWithCredentials;
+
+  /// No description provided for @haUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Assistant URL'**
+  String get haUrl;
+
+  /// No description provided for @pleaseEnterUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter URL'**
+  String get pleaseEnterUrl;
+
+  /// No description provided for @pleaseEnterToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter token'**
+  String get pleaseEnterToken;
+
+  /// No description provided for @pleaseEnterUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter username'**
+  String get pleaseEnterUsername;
+
+  /// No description provided for @pleaseEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter password'**
+  String get pleaseEnterPassword;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get loginFailed;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate

@@ -109,7 +109,7 @@ class _AddWidgetScreenState extends State<AddWidgetScreen> {
                 hintText: l10n.searchEntities,
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.1),
+                fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -345,12 +345,21 @@ class WidgetPreviewScreen extends StatelessWidget {
   }
 
   IconData _getIconForEntity(String entityId) {
-    if (entityId.startsWith('switch.')) return Icons.toggle_on;
-    if (entityId.startsWith('binary_sensor.'))
+    if (entityId.startsWith('switch.')) {
+      return Icons.toggle_on;
+    }
+    if (entityId.startsWith('binary_sensor.')) {
       return Icons.check_circle_outline;
-    if (entityId.startsWith('cover.')) return Icons.curtains;
-    if (entityId.startsWith('person.')) return Icons.person;
-    if (entityId.startsWith('device_tracker.')) return Icons.location_on;
+    }
+    if (entityId.startsWith('cover.')) {
+      return Icons.curtains;
+    }
+    if (entityId.startsWith('person.')) {
+      return Icons.person;
+    }
+    if (entityId.startsWith('device_tracker.')) {
+      return Icons.location_on;
+    }
     return Icons.device_unknown;
   }
 }

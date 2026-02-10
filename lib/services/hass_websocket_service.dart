@@ -33,9 +33,12 @@ class HassWebSocketService extends ChangeNotifier {
   static const _pingInterval = Duration(seconds: 30);
   static const _reconnectDelay = Duration(seconds: 5);
 
+  String? _connectionError;
+
   bool get isConnected => _isConnected;
   bool get isAuthenticated => _isAuthenticated;
   bool get isReady => _isReady;
+  String? get connectionError => _connectionError;
   Map<String, dynamic> get entitiesMap => _entities;
   List<dynamic> get entities => _entities.values.toList();
   List<dynamic> get areas => _areas;
@@ -47,6 +50,7 @@ class HassWebSocketService extends ChangeNotifier {
     _url = baseUrl.replaceFirst(RegExp(r'^http'), 'ws');
     _token = token;
 
+    _connectionError = null;
     await _establishConnection();
   }
 
@@ -64,6 +68,7 @@ class HassWebSocketService extends ChangeNotifier {
 
       _channel = WebSocketChannel.connect(wsUrl);
       _isConnected = true;
+      _connectionError = null;
       notifyListeners();
 
       _subscription = _channel!.stream.listen(
@@ -83,11 +88,13 @@ class HassWebSocketService extends ChangeNotifier {
       _startPingTimer();
     } catch (e) {
       AppLogger.e('Connection failed: $e');
-      _handleDisconnect();
+      _connectionError =
+          'Could not connect to Home Assistant. Please check your URL and network.';
+      _handleDisconnect(isError: true);
     }
   }
 
-  void _handleDisconnect() {
+  void _handleDisconnect({bool isError = false}) {
     _isConnected = false;
     _isAuthenticated = false;
     _isReady = false;
@@ -95,7 +102,7 @@ class HassWebSocketService extends ChangeNotifier {
     notifyListeners();
     _cleanup();
 
-    if (!_isManuallyDisconnected) {
+    if (!_isManuallyDisconnected && !isError) {
       _scheduleReconnection();
     }
   }
@@ -146,7 +153,8 @@ class HassWebSocketService extends ChangeNotifier {
       refreshData();
     } else if (type == 'auth_invalid') {
       AppLogger.w('Authentication failed: ${data['message']}');
-      disconnect();
+      _connectionError = 'auth_invalid';
+      _handleDisconnect(isError: true);
     } else if (type == 'pong') {
       // Received pong, connection is alive
     } else if (type == 'result') {
@@ -285,6 +293,31 @@ class HassWebSocketService extends ChangeNotifier {
     _sendJson({'id': id, 'type': 'conversation/process', 'text': text});
 
     return completer.future;
+  }
+
+  /// Starts the Assist pipeline for voice interaction.
+  /// Returns the subscription ID (which is the message ID).
+  int runAssistPipeline({
+    String startStage = 'stt',
+    String endStage = 'tts',
+    int sampleRate = 16000,
+  }) {
+    final id = _idCounter++;
+    _sendJson({
+      'id': id,
+      'type': 'assist_pipeline/run',
+      'start_stage': startStage,
+      'end_stage': endStage,
+      'input': {'sample_rate': sampleRate},
+    });
+    return id;
+  }
+
+  /// Sends a chunk of binary audio data to the WebSocket.
+  void sendAudioChunk(Uint8List chunk) {
+    if (_channel != null) {
+      _channel!.sink.add(chunk);
+    }
   }
 
   Future<dynamic> getStates() {

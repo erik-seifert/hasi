@@ -149,9 +149,24 @@ class DashboardService extends ChangeNotifier {
       updatedColumns[0] = [...updatedColumns[0], widget.id];
     }
 
+    // Add to entityIds and orderedEntityIds if not present
+    final updatedEntityIds = List<String>.from(dashboard.entityIds);
+    if (!updatedEntityIds.contains(widget.id)) {
+      updatedEntityIds.add(widget.id);
+    }
+
+    final updatedOrderedEntityIds = List<String>.from(
+      dashboard.orderedEntityIds,
+    );
+    if (!updatedOrderedEntityIds.contains(widget.id)) {
+      updatedOrderedEntityIds.add(widget.id);
+    }
+
     _dashboards[index] = dashboard.copyWith(
       customWidgets: updatedCustomWidgets,
       columns: updatedColumns,
+      entityIds: updatedEntityIds,
+      orderedEntityIds: updatedOrderedEntityIds,
     );
 
     await save();
@@ -194,9 +209,18 @@ class DashboardService extends ChangeNotifier {
       return col.where((id) => id != widgetId).toList();
     }).toList();
 
+    final updatedEntityIds = dashboard.entityIds
+        .where((id) => id != widgetId)
+        .toList();
+    final updatedOrderedEntityIds = dashboard.orderedEntityIds
+        .where((id) => id != widgetId)
+        .toList();
+
     _dashboards[index] = dashboard.copyWith(
       customWidgets: updatedCustomWidgets,
       columns: updatedColumns,
+      entityIds: updatedEntityIds,
+      orderedEntityIds: updatedOrderedEntityIds,
     );
 
     await save();

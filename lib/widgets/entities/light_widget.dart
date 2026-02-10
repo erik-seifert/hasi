@@ -88,53 +88,54 @@ class _LightWidgetState extends State<LightWidget> {
             }
           }
 
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).cardColor,
-              boxShadow: [
-                BoxShadow(
-                  color: bulbColor.withOpacity(isOn ? 0.2 : 0.05),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 400),
-                      opacity: isOn ? 0.1 : 0.0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [bulbColor, Colors.transparent],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: bulbColor.withValues(alpha: isOn ? 0.2 : 0.05),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 400),
+                        opacity: isOn ? 0.1 : 0.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [bulbColor, Colors.transparent],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  _buildContent(
-                    context,
-                    entity,
-                    controller,
-                    isOn,
-                    bulbColor,
-                    brightness,
-                    colorTemp,
-                    minMireks,
-                    maxMireks,
-                    supportedColorModes,
-                  ),
-                ],
+                    _buildContent(
+                      context,
+                      entity,
+                      controller,
+                      isOn,
+                      bulbColor,
+                      brightness,
+                      colorTemp,
+                      minMireks,
+                      maxMireks,
+                      supportedColorModes,
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -175,7 +176,7 @@ class _LightWidgetState extends State<LightWidget> {
               duration: const Duration(milliseconds: 300),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: bulbColor.withOpacity(0.2),
+                color: bulbColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -204,7 +205,7 @@ class _LightWidgetState extends State<LightWidget> {
           ),
           trailing: Switch(
             value: isOn,
-            activeColor: bulbColor,
+            activeThumbColor: bulbColor,
             onChanged: (val) => controller.toggle(val),
           ),
         ),

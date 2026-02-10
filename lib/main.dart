@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:sqflite/sqflite.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'services/auth_service.dart';

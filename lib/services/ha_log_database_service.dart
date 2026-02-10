@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 
@@ -64,8 +65,7 @@ class HaLogDatabaseService {
       // Maintain a limit (keep last 1000 logs)
       _trimLogs(db);
     } catch (e) {
-      // Don't use AppLogger here to avoid circularity if we ever log logger errors
-      print('Error logging to HA database: $e');
+      debugPrint('Error logging to HA database: $e');
     }
   }
 
@@ -78,7 +78,7 @@ class HaLogDatabaseService {
         )
       ''');
     } catch (e) {
-      print('Error trimming HA logs: $e');
+      debugPrint('Error trimming HA logs: $e');
     }
   }
 

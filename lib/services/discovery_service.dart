@@ -22,6 +22,16 @@ class DiscoveryService extends ChangeNotifier {
     _instances.clear();
     notifyListeners();
 
+    // The nsd package does not currently support Linux.
+    if (defaultTargetPlatform == TargetPlatform.linux) {
+      AppLogger.w(
+        "Network discovery is not supported on Linux by the current plugin.",
+      );
+      _isScanning = false;
+      notifyListeners();
+      return;
+    }
+
     try {
       _discovery = await startDiscovery(
         '_home-assistant._tcp',

@@ -1,12 +1,19 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:record/record.dart';
 import 'hass_websocket_service.dart';
 
 class VoiceService extends ChangeNotifier {
   final HassWebSocketService _ws;
   FlutterTts? _tts;
+  final _audioRecorder = AudioRecorder();
+  StreamSubscription<Uint8List>? _audioSubscription;
+  StreamSubscription<dynamic>? _wsSubscription;
+
   bool _isSpeaking = false;
+  bool _isListening = false;
   bool _useNativeTts = false;
   String? _linuxTtsEngine;
   Process? _currentProcess;
@@ -16,6 +23,7 @@ class VoiceService extends ChangeNotifier {
   }
 
   bool get isSpeaking => _isSpeaking;
+  bool get isListening => _isListening;
   bool get useNativeTts => _useNativeTts;
   String? get linuxTtsEngine => _linuxTtsEngine;
 
@@ -29,11 +37,6 @@ class VoiceService extends ChangeNotifier {
         _useNativeTts = true;
         debugPrint("Using native Linux TTS engine: $_linuxTtsEngine");
         return;
-      } else {
-        debugPrint(
-          "No native Linux TTS engine found. Please install espeak-ng or festival.",
-        );
-        debugPrint("Install with: sudo apt install espeak-ng");
       }
     }
 
@@ -60,8 +63,6 @@ class VoiceService extends ChangeNotifier {
         notifyListeners();
         debugPrint("TTS error: $msg");
       });
-
-      debugPrint("Using flutter_tts");
     } catch (e) {
       debugPrint("Could not initialize TTS: $e");
     }
@@ -93,8 +94,6 @@ class VoiceService extends ChangeNotifier {
         await _speakLinux(text);
       } else if (_tts != null) {
         await _tts!.speak(text);
-      } else {
-        debugPrint("No TTS engine available");
       }
     } catch (e) {
       debugPrint("Error during speak: $e");
@@ -107,18 +106,12 @@ class VoiceService extends ChangeNotifier {
       notifyListeners();
 
       List<String> args;
-
       switch (_linuxTtsEngine) {
         case 'espeak-ng':
         case 'espeak':
-          // espeak-ng options:
-          // -v: voice (en-us)
-          // -s: speed (150 words per minute)
-          // -a: amplitude/volume (0-200, default 100)
           args = ['-v', 'en-us', '-s', '150', text];
           break;
         case 'festival':
-          // festival reads from stdin
           args = ['--tts'];
           break;
         default:
@@ -126,13 +119,11 @@ class VoiceService extends ChangeNotifier {
       }
 
       if (_linuxTtsEngine == 'festival') {
-        // Festival needs text via stdin
         _currentProcess = await Process.start(_linuxTtsEngine!, args);
         _currentProcess!.stdin.writeln(text);
         await _currentProcess!.stdin.close();
         await _currentProcess!.exitCode;
       } else {
-        // espeak/espeak-ng take text as argument
         _currentProcess = await Process.start(_linuxTtsEngine!, args);
         await _currentProcess!.exitCode;
       }
@@ -149,8 +140,11 @@ class VoiceService extends ChangeNotifier {
   }
 
   Future<void> stop() async {
+    if (_isListening) {
+      await stopListening();
+    }
+
     if (_useNativeTts) {
-      // Kill the current process if running
       _currentProcess?.kill();
       _currentProcess = null;
       _isSpeaking = false;
@@ -162,11 +156,84 @@ class VoiceService extends ChangeNotifier {
     }
   }
 
+  Future<void> startListening() async {
+    if (_isListening) return;
+
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        _isListening = true;
+        notifyListeners();
+
+        // 1. Start HA Assist pipeline
+        _ws.runAssistPipeline(
+          startStage: 'stt',
+          endStage: 'tts',
+          sampleRate: 16000,
+        );
+
+        // 2. Listen for WebSocket responses for this pipeline
+        _wsSubscription = _ws.eventStream.listen((event) async {
+          if (event == null) return;
+          final type = event['type'];
+
+          if (type == 'run-end') {
+            await stopListening();
+          } else if (type == 'intent-end') {
+            final speechText =
+                event['data']?['intent_output']?['response']?['speech']?['plain']?['speech'];
+            if (speechText != null) {
+              debugPrint('Assist response: $speechText');
+            }
+          } else if (type == 'tts-end') {
+            // Note: If endStage is tts, HA will send a URL to the spoken response.
+            // We usually let HA process the whole pipeline if requested.
+          }
+        });
+
+        // 3. Start recording and streaming audio
+        const config = RecordConfig(
+          encoder: AudioEncoder.pcm16bits,
+          sampleRate: 16000,
+          numChannels: 1,
+        );
+
+        final stream = await _audioRecorder.startStream(config);
+        _audioSubscription = stream.listen((chunk) {
+          _ws.sendAudioChunk(Uint8List.fromList(chunk));
+        });
+      }
+    } catch (e) {
+      debugPrint("Error starting listener: $e");
+      _isListening = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> stopListening() async {
+    if (!_isListening) return;
+
+    try {
+      await _audioRecorder.stop();
+      await _audioSubscription?.cancel();
+      await _wsSubscription?.cancel();
+      _audioSubscription = null;
+      _wsSubscription = null;
+
+      // Send an empty chunk to indicate end of stream if needed,
+      // but HA usually detects end of stream or expects a specific message.
+      // For assist_pipeline/run, we just stop sending binary data.
+      _ws.sendAudioChunk(Uint8List(0));
+
+      _isListening = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error stopping listener: $e");
+    }
+  }
+
   Future<String?> sendCommand(String text) async {
     try {
       final response = await _ws.processConversation(text);
-      debugPrint('Assist response: $response');
-
       final speechText = response['response']?['speech']?['plain']?['speech'];
       if (speechText != null) {
         await speak(speechText);
@@ -180,15 +247,12 @@ class VoiceService extends ChangeNotifier {
     }
   }
 
-  // For now, let's add a placeholder for STT since Linux support is limited
-  // In a real Linux app, we might use a shell command or a better plugin
-  Future<void> startListening() async {
-    // Placeholder
-  }
-
   @override
   void dispose() {
     _currentProcess?.kill();
+    _audioRecorder.dispose();
+    _audioSubscription?.cancel();
+    _wsSubscription?.cancel();
     super.dispose();
   }
 }

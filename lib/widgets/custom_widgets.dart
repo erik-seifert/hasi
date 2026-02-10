@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../models/custom_widget.dart';
+import '../utils/date_utils.dart';
 
 class CustomImageWidget extends StatelessWidget {
   final CustomWidget widget;
@@ -71,7 +73,10 @@ class CustomTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // For text widgets, we primarily use the 'text' field from config.
     // The other fields (style, alignment, fontSize, color) are now handled via Markdown or global theme.
-    final text = widget.config[TextWidgetConfig.text] as String? ?? '';
+    var text = widget.config[TextWidgetConfig.text] as String? ?? '';
+    if (HaDateUtils.isHaTimestamp(text)) {
+      text = HaDateUtils.formatHaTimestamp(text);
+    }
 
     return Card(
       child: Container(
@@ -97,4 +102,33 @@ class CustomTextWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+@widgetbook.UseCase(name: 'Image Widget', type: CustomImageWidget)
+Widget buildCustomImageWidgetUseCase(BuildContext context) {
+  return CustomImageWidget(
+    widget: CustomWidget(
+      id: 'test_image',
+      type: CustomWidgetType.image,
+      config: {
+        ImageWidgetConfig.imagePath: '',
+        ImageWidgetConfig.fit: 'cover',
+        ImageWidgetConfig.height: 200.0,
+      },
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Text Widget', type: CustomTextWidget)
+Widget buildCustomTextWidgetUseCase(BuildContext context) {
+  return CustomTextWidget(
+    widget: CustomWidget(
+      id: 'test_text',
+      type: CustomWidgetType.text,
+      config: {
+        TextWidgetConfig.text:
+            '# Hello Markdown\nThis is a **test** of the text widget.',
+      },
+    ),
+  );
 }

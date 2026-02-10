@@ -152,7 +152,7 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
         Text('Image Fit', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: fit,
+          initialValue: fit,
           decoration: const InputDecoration(border: OutlineInputBorder()),
           items: const [
             DropdownMenuItem(value: 'cover', child: Text('Cover')),

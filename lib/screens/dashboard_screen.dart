@@ -10,10 +10,12 @@ import '../widgets/entities/sensor_widget.dart';
 import '../widgets/entities/camera_widget.dart';
 import '../widgets/entities/media_player_widget.dart';
 import '../widgets/entities/weather_widget.dart';
+import '../widgets/entities/entity_tile.dart';
 import '../widgets/voice_assistant_widget.dart';
 import '../widgets/custom_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../models/custom_widget.dart';
+import 'package:uuid/uuid.dart';
 
 import 'theme_settings_screen.dart';
 import 'dashboard_setup_screen.dart';
@@ -79,8 +81,20 @@ class _DashboardScreenState extends State<DashboardScreen>
       (ws) => ws.isReady,
     );
 
+    final connectionError = context.select<HassWebSocketService, String?>(
+      (ws) => ws.connectionError,
+    );
+
+    // If auth is invalid, we should log out and go to login screen
+    if (connectionError == 'auth_invalid') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        wsRead.disconnect();
+        auth.logout();
+      });
+    }
+
     // Show setup screen if no dashboards exist (but only when WebSocket is ready)
-    if (dashService.dashboards.isEmpty) {
+    if (dashService.dashboards.isEmpty && connectionError == null) {
       if (!isReady) {
         // Show loading while waiting for connection
         return Scaffold(
@@ -104,6 +118,57 @@ class _DashboardScreenState extends State<DashboardScreen>
       appBar: AppBar(
         title: Text(activeDash?.name ?? l10n.dashboard),
         actions: [
+          if (_isEditMode && activeDash != null) ...[
+            IconButton(
+              icon: const Icon(Icons.view_column),
+              onPressed: null,
+              disabledColor: Colors.white70,
+              visualDensity: VisualDensity.compact,
+            ),
+            IconButton(
+              icon: const Icon(Icons.remove_circle_outline),
+              onPressed: activeDash.columnCount > 1
+                  ? () {
+                      final newCount = activeDash.columnCount - 1;
+                      final updatedColumns = _normalizeColumns(
+                        activeDash.columns,
+                        newCount,
+                        activeDash.entityIds,
+                      );
+                      final updated = activeDash.copyWith(
+                        columnCount: newCount,
+                        columns: updatedColumns,
+                      );
+                      dashService.updateDashboard(updated);
+                    }
+                  : null,
+              tooltip: 'Remove Column',
+            ),
+            Text(
+              '${activeDash.columnCount}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              onPressed: activeDash.columnCount < 6
+                  ? () {
+                      final newCount = activeDash.columnCount + 1;
+                      final updatedColumns = _normalizeColumns(
+                        activeDash.columns,
+                        newCount,
+                        activeDash.entityIds,
+                      );
+                      final updated = activeDash.copyWith(
+                        columnCount: newCount,
+                        columns: updatedColumns,
+                      );
+                      dashService.updateDashboard(updated);
+                    }
+                  : null,
+              tooltip: 'Add Column',
+            ),
+            const VerticalDivider(width: 1, indent: 12, endIndent: 12),
+          ],
           IconButton(
             icon: Icon(_isEditMode ? Icons.done : Icons.edit),
             onPressed: () {
@@ -123,13 +188,54 @@ class _DashboardScreenState extends State<DashboardScreen>
       body: isReady
           ? _buildBody(wsRead, activeDash, dashService, l10n)
           : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(l10n.connectingToHA),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (connectionError != null) ...[
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        connectionError,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              wsRead.disconnect();
+                              auth.logout();
+                            },
+                            icon: const Icon(Icons.logout),
+                            label: Text(l10n.logout),
+                          ),
+                          const SizedBox(width: 16),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              if (auth.baseUrl != null && auth.token != null) {
+                                wsRead.connect(auth.baseUrl!, auth.token!);
+                              }
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ] else ...[
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(l10n.connectingToHA),
+                    ],
+                  ],
+                ),
               ),
             ),
       floatingActionButton: FloatingActionButton(
@@ -268,7 +374,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: selectedAreaId,
+                initialValue: selectedAreaId,
                 decoration: const InputDecoration(
                   labelText: 'Optional: Pre-fill from Area',
                   border: OutlineInputBorder(),
@@ -421,45 +527,63 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  List<List<String>> _normalizeColumns(
+    List<List<String>> currentColumns,
+    int targetCount, [
+    List<String>? fallbackIds,
+  ]) {
+    final newColumns = List.generate(targetCount, (_) => <String>[]);
+
+    if (currentColumns.isNotEmpty) {
+      if (targetCount >= currentColumns.length) {
+        // More columns or same: copy existing
+        for (int i = 0; i < currentColumns.length; i++) {
+          newColumns[i].addAll(currentColumns[i]);
+        }
+      } else {
+        // Fewer columns: append removed ones to the last remaining column
+        for (int i = 0; i < targetCount - 1; i++) {
+          newColumns[i].addAll(currentColumns[i]);
+        }
+        for (int i = targetCount - 1; i < currentColumns.length; i++) {
+          newColumns[targetCount - 1].addAll(currentColumns[i]);
+        }
+      }
+    } else if (fallbackIds != null) {
+      // Initialize from flat list
+      for (int i = 0; i < fallbackIds.length; i++) {
+        newColumns[i % targetCount].add(fallbackIds[i]);
+      }
+    }
+    return newColumns;
+  }
+
   List<List<String>> _getNormalizedColumns(
     Dashboard dash,
     List<String> entityIdsToShow,
   ) {
-    // 1. Start with columns from model
-    List<List<String>> columns = dash.columns
-        .map((c) => List<String>.from(c))
-        .toList();
+    // 1. Get stable normalized columns from model
+    List<List<String>> columns = _normalizeColumns(
+      dash.columns,
+      dash.columnCount,
+      dash.orderedEntityIds.isNotEmpty ? dash.orderedEntityIds : dash.entityIds,
+    );
 
-    // 2. Initialize if empty or count mismatch
-    if (columns.isEmpty || columns.length != dash.columnCount) {
-      final newColumns = List.generate(dash.columnCount, (_) => <String>[]);
-      if (columns.isNotEmpty) {
-        final all = columns.expand((c) => c).toList();
-        for (int i = 0; i < all.length; i++) {
-          newColumns[i % dash.columnCount].add(all[i]);
-        }
-      } else {
-        final all = dash.orderedEntityIds.isNotEmpty
-            ? dash.orderedEntityIds
-            : dash.entityIds;
-        for (int i = 0; i < all.length; i++) {
-          newColumns[i % dash.columnCount].add(all[i]);
-        }
-      }
-      columns = newColumns;
-    }
-
-    // 3. Sync with actual entities we want to show
+    // 2. Sync with actual entities we want to show (filter out non-existent)
     for (var col in columns) {
       col.removeWhere((id) => !entityIdsToShow.contains(id));
     }
+
+    // 3. Ensure all visible entities are in some column
     final allInColumns = columns.expand((c) => c).toSet();
     final missing = entityIdsToShow
         .where((id) => !allInColumns.contains(id))
         .toList();
+
     for (int i = 0; i < missing.length; i++) {
       columns[i % columns.length].add(missing[i]);
     }
+
     return columns;
   }
 
@@ -469,13 +593,16 @@ class _DashboardScreenState extends State<DashboardScreen>
     String entityId,
     int targetColIndex,
     String? targetBeforeId,
-    List<List<String>> currentColumns,
+    List<List<String>> unused, // Renamed from _ignored
   ) {
+    debugPrint('D&D: Moving $entityId to col $targetColIndex');
     try {
-      // 1. Create a deep copy of current working columns
-      final newColumns = currentColumns
-          .map((c) => List<String>.from(c))
-          .toList();
+      // 1. Get current columns from model and normalize count
+      List<List<String>> newColumns = _normalizeColumns(
+        activeDash.columns,
+        activeDash.columnCount,
+        activeDash.entityIds,
+      );
 
       // Ensure index is within bounds
       if (targetColIndex >= newColumns.length) {
@@ -530,9 +657,16 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     List<String> entityIdsToShow;
     if (activeDash != null) {
-      entityIdsToShow = allEntities.keys
-          .where((id) => activeDash.entityIds.contains(id))
-          .toList();
+      entityIdsToShow = activeDash.entityIds.where((widgetId) {
+        // If it's a custom widget, it belongs to the dashboard directly
+        if (activeDash.customWidgets.containsKey(widgetId)) return true;
+
+        // If it's an entity widget, check if the base entity still exists
+        final entityId = widgetId.contains('[')
+            ? widgetId.substring(0, widgetId.indexOf('['))
+            : widgetId;
+        return allEntities.containsKey(entityId);
+      }).toList();
     } else {
       entityIdsToShow = allEntities.keys.toList();
     }
@@ -549,6 +683,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     final columns = _getNormalizedColumns(activeDash, entityIdsToShow);
 
     return SingleChildScrollView(
+      key: PageStorageKey('dash_${activeDash.id}'),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Row(
@@ -581,7 +716,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         padding: const EdgeInsets.all(8.0),
         child: Wrap(
           spacing: 8.0,
-          runSpacing: 8.0,
+          runSpacing: 16.0,
           children: entityIds.map((entityId) {
             return SizedBox(
               width: (MediaQuery.of(context).size.width - 24) / 2,
@@ -603,8 +738,9 @@ class _DashboardScreenState extends State<DashboardScreen>
     AppLocalizations l10n,
   ) {
     return DragTarget<String>(
-      onWillAccept: (data) => true,
-      onAccept: (draggedId) {
+      onWillAcceptWithDetails: (details) => true,
+      onAcceptWithDetails: (details) {
+        final draggedId = details.data;
         _moveEntity(
           activeDash,
           dashService,
@@ -619,7 +755,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           decoration: BoxDecoration(
             border: Border.all(
               color: candidateData.isNotEmpty
-                  ? Colors.blue.withOpacity(0.3)
+                  ? Colors.blue.withValues(alpha: 0.3)
                   : Colors.transparent,
               width: 2,
             ),
@@ -644,6 +780,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ws,
                   l10n,
                 ),
+                // Regular spacing between widgets
+                if (!_isEditMode && i < entityIds.length - 1)
+                  const SizedBox(height: 16),
+
                 if (_isEditMode)
                   _buildAddWidgetButton(
                     colIndex,
@@ -653,43 +793,61 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ),
               ],
 
-              // Empty space at bottom to allow dropping at end (only when not in edit mode)
-              if (!_isEditMode)
-                DragTarget<String>(
-                  onWillAccept: (data) => true,
-                  onAccept: (draggedId) {
-                    _moveEntity(
-                      activeDash,
-                      dashService,
-                      draggedId,
-                      colIndex,
-                      null,
-                      currentColumns,
-                    );
-                  },
-                  builder: (context, candidateData, rejectedData) {
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      height: candidateData.isNotEmpty ? 100 : 50,
-                      width: double.infinity,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: candidateData.isNotEmpty
-                            ? Colors.blue.withOpacity(0.1)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                        border: candidateData.isNotEmpty
-                            ? Border.all(color: Colors.blue.withOpacity(0.5))
-                            : null,
-                      ),
-                      child: candidateData.isNotEmpty
-                          ? const Center(
-                              child: Icon(Icons.add, color: Colors.blue),
+              // Empty space at bottom to allow dropping at end
+              DragTarget<String>(
+                onWillAcceptWithDetails: (details) => true,
+                onAcceptWithDetails: (details) {
+                  _moveEntity(
+                    activeDash,
+                    dashService,
+                    details.data,
+                    colIndex,
+                    null,
+                    currentColumns,
+                  );
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: candidateData.isNotEmpty
+                        ? 100
+                        : (_isEditMode ? 80 : 50),
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: candidateData.isNotEmpty
+                          ? Colors.blue.withValues(alpha: 0.1)
+                          : (_isEditMode
+                                ? Colors.grey.withValues(alpha: 0.05)
+                                : Colors.transparent),
+                      borderRadius: BorderRadius.circular(12),
+                      border: candidateData.isNotEmpty
+                          ? Border.all(
+                              color: Colors.blue.withValues(alpha: 0.5),
                             )
-                          : null,
-                    );
-                  },
-                ),
+                          : (_isEditMode
+                                ? Border.all(
+                                    color: Colors.grey.withValues(alpha: 0.1),
+                                    style: BorderStyle.solid,
+                                  )
+                                : null),
+                    ),
+                    child: candidateData.isNotEmpty
+                        ? const Center(
+                            child: Icon(Icons.add, color: Colors.blue),
+                          )
+                        : (_isEditMode
+                              ? const Center(
+                                  child: Icon(
+                                    Icons.move_to_inbox,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
+                                )
+                              : null),
+                  );
+                },
+              ),
             ],
           ),
         );
@@ -707,12 +865,12 @@ class _DashboardScreenState extends State<DashboardScreen>
     AppLocalizations l10n,
   ) {
     return DragTarget<String>(
-      onWillAccept: (data) => data != entityId,
-      onAccept: (draggedId) {
+      onWillAcceptWithDetails: (details) => details.data != entityId,
+      onAcceptWithDetails: (details) {
         _moveEntity(
           activeDash,
           dashService,
-          draggedId,
+          details.data,
           colIndex,
           entityId,
           currentColumns,
@@ -736,24 +894,23 @@ class _DashboardScreenState extends State<DashboardScreen>
                 key: ValueKey(entityId),
                 data: entityId,
                 axis: null,
-                delay: const Duration(milliseconds: 150),
+                delay: const Duration(milliseconds: 500),
                 feedback: Material(
                   elevation: 10,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   color: Colors.transparent,
                   child: Opacity(
-                    opacity: 0.8,
+                    opacity: 0.9,
                     child: SizedBox(
                       width:
-                          (MediaQuery.of(context).size.width - 16) /
-                              activeDash.columnCount -
-                          8,
+                          MediaQuery.of(context).size.width /
+                          (activeDash.columnCount + 0.5),
                       child: _buildEntityPreview(entityId, activeDash, ws),
                     ),
                   ),
                 ),
                 childWhenDragging: Opacity(
-                  opacity: 0.2,
+                  opacity: 0.3,
                   child: _buildEntityWrapper(entityId, activeDash),
                 ),
                 child: _buildEntityWithSettings(
@@ -779,97 +936,75 @@ class _DashboardScreenState extends State<DashboardScreen>
     HassWebSocketService ws,
     AppLocalizations l10n,
   ) {
-    return Stack(
-      children: [
-        // Disable all widget interactions in edit mode
-        IgnorePointer(
-          ignoring: true,
-          child: Opacity(
-            opacity: 0.7,
-            child: _buildEntityWrapper(entityId, activeDash),
-          ),
-        ),
-        // Drag handle on the left
-        Positioned(
-          top: 8,
-          left: 8,
-          child: Material(
-            color: Colors.black54,
-            borderRadius: BorderRadius.circular(20),
-            child: const Padding(
-              padding: EdgeInsets.all(6.0),
-              child: Icon(Icons.drag_indicator, size: 20, color: Colors.white),
-            ),
-          ),
-        ),
-        // Settings icon on the top right
-        Positioned(
-          top: 8,
-          right: 48,
-          child: Material(
-            color: Colors.black54,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                final entity = ws.entitiesMap[entityId];
-                if (entity != null) {
-                  _showEntityConfigDialog(
-                    entity,
-                    activeDash,
-                    dashService,
-                    l10n,
-                  );
-                }
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(6.0),
-                child: Icon(Icons.settings, size: 20, color: Colors.white),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          final baseEntityId = entityId.contains('[')
+              ? entityId.substring(0, entityId.indexOf('['))
+              : entityId;
+          final entity = ws.entitiesMap[baseEntityId];
+          if (entity != null) {
+            _showEntityConfigDialog(
+              entity,
+              entityId,
+              activeDash,
+              dashService,
+              l10n,
+            );
+          }
+        },
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            // Disable all widget interactions in edit mode
+            IgnorePointer(
+              ignoring: true,
+              child: Opacity(
+                opacity: 0.8,
+                child: _buildEntityWrapper(entityId, activeDash),
               ),
             ),
-          ),
-        ),
-        // Delete icon on the far right
-        Positioned(
-          top: 8,
-          right: 8,
-          child: Material(
-            color: Colors.red.shade700,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () =>
-                  _confirmDeleteWidget(entityId, activeDash, dashService, l10n),
-              child: const Padding(
-                padding: EdgeInsets.all(6.0),
-                child: Icon(Icons.delete, size: 20, color: Colors.white),
+            // Subtle edit mode overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.blue.withValues(alpha: 0.4),
+                    width: 2,
+                    style: BorderStyle.solid,
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildEntityPreview(
-    String entityId,
+    String widgetId,
     Dashboard activeDash,
     HassWebSocketService ws,
   ) {
     // A lightweight version of the widget for dragging feedback
+    final entityId = widgetId.contains('[')
+        ? widgetId.substring(0, widgetId.indexOf('['))
+        : widgetId;
     final entity = ws.entitiesMap[entityId];
     if (entity == null) return const SizedBox.shrink();
 
     final attributes = entity['attributes'] ?? {};
     final friendlyName =
-        activeDash.entityConfigs[entityId]?.nameOverride ??
+        activeDash.entityConfigs[widgetId]?.nameOverride ??
         attributes['friendly_name'] ??
         entityId;
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: ListTile(
-        leading: const Icon(Icons.drag_handle),
         title: Text(
           friendlyName,
           maxLines: 1,
@@ -880,10 +1015,10 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  Widget _buildEntityWrapper(String entityId, Dashboard? activeDash) {
+  Widget _buildEntityWrapper(String widgetId, Dashboard? activeDash) {
     // Check if this is a custom widget first
-    if (activeDash != null && activeDash.customWidgets.containsKey(entityId)) {
-      final customWidget = activeDash.customWidgets[entityId]!;
+    if (activeDash != null && activeDash.customWidgets.containsKey(widgetId)) {
+      final customWidget = activeDash.customWidgets[widgetId]!;
       switch (customWidget.type) {
         case CustomWidgetType.image:
           return CustomImageWidget(widget: customWidget);
@@ -892,8 +1027,12 @@ class _DashboardScreenState extends State<DashboardScreen>
       }
     }
 
-    // Otherwise, treat as HA entity
-    final config = activeDash?.entityConfigs[entityId];
+    // Otherwise, treat as HA entity (possibly with instance ID)
+    final entityId = widgetId.contains('[')
+        ? widgetId.substring(0, widgetId.indexOf('['))
+        : widgetId;
+
+    final config = activeDash?.entityConfigs[widgetId];
 
     if (entityId.startsWith('light.')) {
       return LightWidget(entityId: entityId, config: config);
@@ -909,17 +1048,18 @@ class _DashboardScreenState extends State<DashboardScreen>
       return WeatherWidget(entityId: entityId, config: config);
     }
 
-    return _buildEntityTile(entityId, config);
+    return EntityTile(entityId: entityId, config: config);
   }
 
   void _showEntityConfigDialog(
     Map<String, dynamic> entity,
+    String widgetId,
     Dashboard activeDash,
     DashboardService dashService,
     AppLocalizations l10n,
   ) {
     final entityId = entity['entity_id'] as String;
-    final config = activeDash.entityConfigs[entityId] ?? EntityConfig();
+    final config = activeDash.entityConfigs[widgetId] ?? EntityConfig();
     final nameController = TextEditingController(
       text:
           config.nameOverride ??
@@ -948,7 +1088,11 @@ class _DashboardScreenState extends State<DashboardScreen>
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text(entityId),
+          title: Text(
+            widgetId.contains('[')
+                ? '$entityId (Instance: ${widgetId.substring(widgetId.indexOf('[') + 1, widgetId.indexOf(']'))})'
+                : entityId,
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -970,7 +1114,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     },
                   ),
                   DropdownButtonFormField<String>(
-                    value: forecastType,
+                    initialValue: forecastType,
                     decoration: const InputDecoration(
                       labelText: 'Forecast Type',
                     ),
@@ -1054,13 +1198,23 @@ class _DashboardScreenState extends State<DashboardScreen>
           ),
           actions: [
             TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close config dialog
+                _confirmDeleteWidget(widgetId, activeDash, dashService, l10n);
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text(l10n.delete),
+            ),
+            TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 final newConfig = EntityConfig(
-                  nameOverride: nameController.text,
+                  nameOverride: nameController.text.isNotEmpty
+                      ? nameController.text
+                      : null,
                   options: {
                     ...config.options,
                     if (entityId.startsWith('weather.')) ...{
@@ -1087,7 +1241,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 final newConfigs = Map<String, EntityConfig>.from(
                   activeDash.entityConfigs,
                 );
-                newConfigs[entityId] = newConfig;
+                newConfigs[widgetId] = newConfig;
 
                 final updated = activeDash.copyWith(entityConfigs: newConfigs);
                 dashService.updateDashboard(updated);
@@ -1098,39 +1252,6 @@ class _DashboardScreenState extends State<DashboardScreen>
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildEntityTile(String entityId, EntityConfig? config) {
-    return Selector<HassWebSocketService, Map<String, dynamic>?>(
-      selector: (_, ws) => ws.entitiesMap[entityId],
-      builder: (context, entity, _) {
-        if (entity == null) return const SizedBox.shrink();
-
-        final state = entity['state'] ?? 'unknown';
-        final attributes = entity['attributes'] ?? {};
-        final friendlyName =
-            config?.nameOverride ?? attributes['friendly_name'] ?? entityId;
-
-        IconData icon = Icons.device_unknown;
-        if (entityId.startsWith('switch.')) icon = Icons.toggle_on;
-
-        return ListTile(
-          leading: Icon(icon),
-          title: Text(friendlyName),
-          subtitle: Text(state),
-          onTap: () {
-            if (entityId.startsWith('switch.')) {
-              final service = state == 'on' ? 'turn_off' : 'turn_on';
-              context.read<HassWebSocketService>().callService(
-                'switch',
-                service,
-                serviceData: {'entity_id': entityId},
-              );
-            }
-          },
-        );
-      },
     );
   }
 
@@ -1153,7 +1274,10 @@ class _DashboardScreenState extends State<DashboardScreen>
         label: const Text('Add Widget'),
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(double.infinity, 40),
-          side: BorderSide(color: Colors.blue.withOpacity(0.5), width: 1.5),
+          side: BorderSide(
+            color: Colors.blue.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -1215,22 +1339,32 @@ class _DashboardScreenState extends State<DashboardScreen>
       activeDash.columns.map((col) => List<String>.from(col)),
     );
 
+    // Generate a unique widget ID for this instance
+    final widgetId = '$entityId[${const Uuid().v4().substring(0, 8)}]';
+
     // Ensure we have enough columns
     while (updatedColumns.length <= columnIndex) {
       updatedColumns.add([]);
     }
 
     // Insert at the specified index
-    updatedColumns[columnIndex].insert(insertAtIndex, entityId);
+    updatedColumns[columnIndex].insert(insertAtIndex, widgetId);
 
-    // Also add to entityIds if not already there
+    // Also add to entityIds and orderedEntityIds
     final updatedEntityIds = List<String>.from(activeDash.entityIds);
-    if (!updatedEntityIds.contains(entityId)) {
-      updatedEntityIds.add(entityId);
-    }
+    updatedEntityIds.add(widgetId);
+
+    final updatedOrderedEntityIds = List<String>.from(
+      activeDash.orderedEntityIds,
+    );
+    updatedOrderedEntityIds.add(widgetId);
 
     await dashService.updateDashboard(
-      activeDash.copyWith(entityIds: updatedEntityIds, columns: updatedColumns),
+      activeDash.copyWith(
+        entityIds: updatedEntityIds,
+        columns: updatedColumns,
+        orderedEntityIds: updatedOrderedEntityIds,
+      ),
     );
   }
 
@@ -1312,10 +1446,21 @@ class _DashboardScreenState extends State<DashboardScreen>
             .where((id) => id != widgetId)
             .toList();
 
+        final updatedConfigs = Map<String, EntityConfig>.from(
+          activeDash.entityConfigs,
+        );
+        updatedConfigs.remove(widgetId);
+
+        final updatedOrderedEntityIds = activeDash.orderedEntityIds
+            .where((id) => id != widgetId)
+            .toList();
+
         await dashService.updateDashboard(
           activeDash.copyWith(
             entityIds: updatedEntityIds,
             columns: updatedColumns,
+            entityConfigs: updatedConfigs,
+            orderedEntityIds: updatedOrderedEntityIds,
           ),
         );
       }

@@ -41,8 +41,7 @@ class ClimateWidget extends StatelessWidget {
 
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -69,7 +68,7 @@ class ClimateWidget extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: themeColor.withOpacity(0.2),
+                            color: themeColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -105,7 +104,7 @@ class ClimateWidget extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       Text(
-                        '${currentTemp}°',
+                        '$currentTemp°',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -138,7 +137,7 @@ class ClimateWidget extends StatelessWidget {
                             ? (targetTemp - minTemp) / (maxTemp - minTemp)
                             : 0,
                         strokeWidth: 10,
-                        backgroundColor: Colors.grey.withOpacity(0.1),
+                        backgroundColor: Colors.grey.withValues(alpha: 0.1),
                         valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                       ),
                     ),
@@ -190,7 +189,9 @@ class ClimateWidget extends StatelessWidget {
                       child: ChoiceChip(
                         label: Text(mode.toString().toUpperCase()),
                         selected: isSelected,
-                        selectedColor: _getStateColor(mode).withOpacity(0.3),
+                        selectedColor: _getStateColor(
+                          mode,
+                        ).withValues(alpha: 0.3),
                         onSelected: (selected) {
                           if (selected) {
                             context.read<HassWebSocketService>().callService(
@@ -297,7 +298,9 @@ class ClimateWidget extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: enabled ? color.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+        color: enabled
+            ? color.withValues(alpha: 0.1)
+            : Colors.grey.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: IconButton(

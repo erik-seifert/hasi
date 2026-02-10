@@ -50,7 +50,7 @@ class ThemeService extends ChangeNotifier {
   Future<void> setSeedColor(Color color) async {
     _seedColor = color;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('seed_color', color.value);
+    await prefs.setInt('seed_color', color.toARGB32());
     notifyListeners();
   }
 
@@ -62,6 +62,10 @@ class ThemeService extends ChangeNotifier {
   }
 
   ThemeData get themeData {
+    final cardBorderColor = _isDarkMode
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.black.withValues(alpha: 0.05);
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
@@ -69,17 +73,28 @@ class ThemeService extends ChangeNotifier {
         brightness: _isDarkMode ? Brightness.dark : Brightness.light,
       ),
       scaffoldBackgroundColor: _isDarkMode
-          ? Colors.black
-          : const Color(0xFFF5F5F7),
+          ? const Color(0xFF0A1128) // Dark Blue
+          : const Color(0xFFEBF3FF), // Light Blue
+      cardColor: _isDarkMode
+          ? (_useGlassmorphism
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFF1E1E1E))
+          : (_useGlassmorphism
+                ? Colors.white.withValues(alpha: 0.7)
+                : Colors.white),
       cardTheme: CardThemeData(
-        elevation: _useGlassmorphism ? 0 : 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: _useGlassmorphism ? 0 : 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: cardBorderColor, width: 1),
+        ),
+        margin: EdgeInsets.zero,
         color: _isDarkMode
             ? (_useGlassmorphism
-                  ? Colors.white.withOpacity(0.05)
+                  ? Colors.white.withValues(alpha: 0.08)
                   : const Color(0xFF1E1E1E))
             : (_useGlassmorphism
-                  ? Colors.black.withOpacity(0.02)
+                  ? Colors.white.withValues(alpha: 0.7)
                   : Colors.white),
       ),
     );

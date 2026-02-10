@@ -4,6 +4,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../history_graph_widget.dart';
 import '../../services/hass_websocket_service.dart';
 import '../../models/dashboard.dart';
+import '../../utils/date_utils.dart';
 
 class SensorWidget extends StatelessWidget {
   final String entityId;
@@ -47,8 +48,7 @@ class SensorWidget extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -58,7 +58,7 @@ class SensorWidget extends StatelessWidget {
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: iconColor),
@@ -71,12 +71,19 @@ class SensorWidget extends StatelessWidget {
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-              trailing: Text(
-                '$state$unit',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+              trailing: Builder(
+                builder: (context) {
+                  final displayState = HaDateUtils.isHaTimestamp(state)
+                      ? HaDateUtils.formatHaTimestamp(state)
+                      : '$state$unit';
+                  return Text(
+                    displayState,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  );
+                },
               ),
             ),
             if (showHistory)

@@ -150,8 +150,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
 
     return Card(
       elevation: 2,
-      margin: const EdgeInsets.all(8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

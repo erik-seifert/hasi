@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../services/discovery_service.dart';
 import '../services/auth_service.dart';
 import '../models/ha_instance.dart';
+import '../l10n/app_localizations.dart';
 import 'qr_scanner_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -106,8 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (result != null && result is String) {
         setState(() {
           // If it's a URL-like structure, set URL, else set token
-          // Simple heuristic: if it contains "http", assume it's URL or JSON with URL
-          // But user said "scan QR for long life token". This implies just the token string potentially.
           if (result.startsWith('http')) {
             _tokenUrlController.text = result;
             _credUrlController.text = result;
@@ -115,6 +115,12 @@ class _LoginScreenState extends State<LoginScreen> {
             _tokenController.text = result;
           }
         });
+
+        // Automatically trigger login after scan
+        if (_tokenController.text.isNotEmpty &&
+            _tokenUrlController.text.isNotEmpty) {
+          _loginWithToken();
+        }
       }
     }
   }
@@ -122,70 +128,103 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final discoveryService = context.watch<DiscoveryService>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Connect to Home Assistant')),
+      appBar: AppBar(title: Text(l10n.connectToHA)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Discovery Section
-              Text('Discovery', style: Theme.of(context).textTheme.titleLarge),
-              if (discoveryService.isScanning) const LinearProgressIndicator(),
-              const SizedBox(height: 10),
-              if (discoveryService.instances.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Text('Searching for Home Assistant instances...'),
-                )
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: discoveryService.instances.length,
-                  itemBuilder: (context, index) {
-                    final instance = discoveryService.instances[index];
-                    return Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.home),
-                        title: Text(instance.name),
-                        subtitle: Text(instance.url),
-                        onTap: () => _onInstanceSelected(instance),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              Center(
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    );
-                  },
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset('assets/logo.png', fit: BoxFit.contain),
+                  ),
                 ),
-              const SizedBox(height: 20),
-              const Divider(),
-              const SizedBox(height: 20),
+              ),
+              const SizedBox(height: 30),
+              if (defaultTargetPlatform != TargetPlatform.linux) ...[
+                // Discovery Section
+                Text(
+                  l10n.discovery,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                if (discoveryService.isScanning)
+                  const LinearProgressIndicator(),
+                const SizedBox(height: 10),
+                if (discoveryService.instances.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Text(l10n.searchingForHA),
+                  )
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: discoveryService.instances.length,
+                    itemBuilder: (context, index) {
+                      final instance = discoveryService.instances[index];
+                      return Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.home),
+                          title: Text(instance.name),
+                          subtitle: Text(instance.url),
+                          onTap: () => _onInstanceSelected(instance),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                const SizedBox(height: 20),
+                const Divider(),
+                const SizedBox(height: 20),
+              ],
 
               // Tabs
               DefaultTabController(
                 length: 2,
                 child: Column(
                   children: [
-                    const TabBar(
+                    TabBar(
                       tabs: [
-                        Tab(text: 'Token'),
-                        Tab(text: 'Credentials'),
+                        Tab(text: l10n.token),
+                        Tab(text: l10n.credentials),
                       ],
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
-                      // Using a constrained height or letting it grow?
-                      // TabBarView requires bounded height.
-                      // Since we are in SingleChildScrollView, we can't just use Expanded.
-                      // We'll wrap TabBarView in a SizedBox with a reasonable height or use a custom solution.
-                      // Alternatively, avoid TabBarView and use a state variable to switch content.
-                      // Switching content is safer inside SingleChildScrollView.
                       height: 400,
                       child: TabBarView(
                         children: [
-                          _buildTokenTab(context),
-                          _buildCredentialsTab(context),
+                          _buildTokenTab(context, l10n),
+                          _buildCredentialsTab(context, l10n),
                         ],
                       ),
                     ),
@@ -199,28 +238,28 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTokenTab(BuildContext context) {
+  Widget _buildTokenTab(BuildContext context, AppLocalizations l10n) {
     return Form(
       key: _tokenFormKey,
       child: Column(
         children: [
-          _buildUrlField(_tokenUrlController),
+          _buildUrlField(_tokenUrlController, l10n),
           const SizedBox(height: 15),
           Row(
             children: [
               Expanded(
                 child: TextFormField(
                   controller: _tokenController,
-                  decoration: const InputDecoration(
-                    labelText: 'Long-Lived Access Token',
-                    hintText: 'Paste token',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.vpn_key),
+                  decoration: InputDecoration(
+                    labelText: l10n.longLivedToken,
+                    hintText: l10n.pasteToken,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.vpn_key),
                   ),
                   obscureText: true,
                   maxLines: 1,
                   validator: (value) => value == null || value.isEmpty
-                      ? 'Please enter token'
+                      ? l10n.pleaseEnterToken
                       : null,
                 ),
               ),
@@ -229,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 IconButton.filledTonal(
                   onPressed: _scanQR,
                   icon: const Icon(Icons.qr_code_scanner),
-                  tooltip: 'Scan QR Code',
+                  tooltip: l10n.scanQRCode,
                 ),
               ],
             ],
@@ -244,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.login),
-            label: const Text('Connect with Token'),
+            label: Text(l10n.connectWithToken),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               minimumSize: const Size(double.infinity, 50),
@@ -255,34 +294,36 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildCredentialsTab(BuildContext context) {
+  Widget _buildCredentialsTab(BuildContext context, AppLocalizations l10n) {
     return Form(
       key: _credentialsFormKey,
       child: Column(
         children: [
-          _buildUrlField(_credUrlController),
+          _buildUrlField(_credUrlController, l10n),
           const SizedBox(height: 15),
           TextFormField(
             controller: _usernameController,
-            decoration: const InputDecoration(
-              labelText: 'Username',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.person),
+            decoration: InputDecoration(
+              labelText: l10n.username,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.person),
             ),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Please enter username' : null,
+            validator: (value) => value == null || value.isEmpty
+                ? l10n.pleaseEnterUsername
+                : null,
           ),
           const SizedBox(height: 15),
           TextFormField(
             controller: _passwordController,
-            decoration: const InputDecoration(
-              labelText: 'Password',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.lock),
+            decoration: InputDecoration(
+              labelText: l10n.password,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.lock),
             ),
             obscureText: true,
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Please enter password' : null,
+            validator: (value) => value == null || value.isEmpty
+                ? l10n.pleaseEnterPassword
+                : null,
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
@@ -294,7 +335,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.login),
-            label: const Text('Connect with Credentials'),
+            label: Text(l10n.connectWithCredentials),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               minimumSize: const Size(double.infinity, 50),
@@ -305,16 +346,19 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildUrlField(TextEditingController controller) {
+  Widget _buildUrlField(
+    TextEditingController controller,
+    AppLocalizations l10n,
+  ) {
     return TextFormField(
       controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Home Assistant URL',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.link),
+      decoration: InputDecoration(
+        labelText: l10n.haUrl,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.link),
       ),
       validator: (value) =>
-          value == null || value.isEmpty ? 'Please enter URL' : null,
+          value == null || value.isEmpty ? l10n.pleaseEnterUrl : null,
     );
   }
 }

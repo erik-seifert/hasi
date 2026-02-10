@@ -82,7 +82,11 @@ class LightController extends ChangeNotifier {
   }
 
   void setRgbColor(Color color) {
-    _localRgbColor = [color.red, color.green, color.blue];
+    _localRgbColor = [
+      (color.r * 255).round(),
+      (color.g * 255).round(),
+      (color.b * 255).round(),
+    ];
     notifyListeners();
     _ws.callService(
       'light',

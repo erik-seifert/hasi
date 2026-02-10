@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../services/auth_service.dart';
 
 class HistoryGraphWidget extends StatefulWidget {
@@ -130,7 +131,7 @@ class _HistoryGraphWidgetState extends State<HistoryGraphWidget> {
               getTooltipItems: (touchedSpots) {
                 return touchedSpots.map((spot) {
                   return LineTooltipItem(
-                    '${spot.y.toStringAsFixed(1)}',
+                    spot.y.toStringAsFixed(1),
                     const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -159,8 +160,12 @@ class _HistoryGraphWidgetState extends State<HistoryGraphWidget> {
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                    Theme.of(context).colorScheme.primary.withOpacity(0.0),
+                    Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.3),
+                    Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -174,4 +179,12 @@ class _HistoryGraphWidgetState extends State<HistoryGraphWidget> {
       ),
     );
   }
+}
+
+@widgetbook.UseCase(name: 'Default', type: HistoryGraphWidget)
+Widget buildHistoryGraphWidgetUseCase(BuildContext context) {
+  return const HistoryGraphWidget(
+    entityId: 'sensor.temperature',
+    friendlyName: 'Temperature',
+  );
 }

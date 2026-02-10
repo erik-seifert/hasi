@@ -38,8 +38,7 @@ class MediaWidget extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         children: [
           Container(

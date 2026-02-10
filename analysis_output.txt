@@ -1,0 +1,56 @@
+Analyzing hasi...                                               
+
+   info • 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round().clamp(0, 255) • lib/controllers/light_controller.dart:85:29 • deprecated_member_use
+   info • 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round().clamp(0, 255) • lib/controllers/light_controller.dart:85:40 • deprecated_member_use
+   info • 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round().clamp(0, 255) • lib/controllers/light_controller.dart:85:53 • deprecated_member_use
+   info • The import of 'package:sqflite/sqflite.dart' is unnecessary because all of the used elements are also provided by the import of 'package:sqflite_common_ffi/sqflite_ffi.dart' • lib/main.dart:5:8 • unnecessary_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/add_widget_screen.dart:112:41 • deprecated_member_use
+   info • Statements in an if should be enclosed in a block • lib/screens/add_widget_screen.dart:350:7 • curly_braces_in_flow_control_structures
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/screens/custom_widget_config_dialog.dart:155:11 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/screens/dashboard_screen.dart:376:17 • deprecated_member_use
+   info • The local variable '_ignored' starts with an underscore • lib/screens/dashboard_screen.dart:595:24 • no_leading_underscores_for_local_identifiers
+   info • 'onWillAccept' is deprecated and shouldn't be used. Use onWillAcceptWithDetails instead. This callback is similar to onWillAcceptWithDetails but does not provide drag details. This feature was deprecated after v3.14.0-0.2.pre • lib/screens/dashboard_screen.dart:740:7 • deprecated_member_use
+   info • 'onAccept' is deprecated and shouldn't be used. Use onAcceptWithDetails instead. This callback is similar to onAcceptWithDetails but does not provide drag details. This feature was deprecated after v3.14.0-0.2.pre • lib/screens/dashboard_screen.dart:741:7 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:756:33 • deprecated_member_use
+   info • 'onWillAccept' is deprecated and shouldn't be used. Use onWillAcceptWithDetails instead. This callback is similar to onWillAcceptWithDetails but does not provide drag details. This feature was deprecated after v3.14.0-0.2.pre • lib/screens/dashboard_screen.dart:796:17 • deprecated_member_use
+   info • 'onAccept' is deprecated and shouldn't be used. Use onAcceptWithDetails instead. This callback is similar to onAcceptWithDetails but does not provide drag details. This feature was deprecated after v3.14.0-0.2.pre • lib/screens/dashboard_screen.dart:797:17 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:817:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:819:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:823:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:826:56 • deprecated_member_use
+   info • 'onWillAccept' is deprecated and shouldn't be used. Use onWillAcceptWithDetails instead. This callback is similar to onWillAcceptWithDetails but does not provide drag details. This feature was deprecated after v3.14.0-0.2.pre • lib/screens/dashboard_screen.dart:864:7 • deprecated_member_use
+   info • 'onAccept' is deprecated and shouldn't be used. Use onAcceptWithDetails instead. This callback is similar to onAcceptWithDetails but does not provide drag details. This feature was deprecated after v3.14.0-0.2.pre • lib/screens/dashboard_screen.dart:865:7 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:970:40 • deprecated_member_use
+   info • Unnecessary braces in a string interpolation • lib/screens/dashboard_screen.dart:1089:20 • unnecessary_brace_in_string_interps
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/screens/dashboard_screen.dart:1113:21 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/dashboard_screen.dart:1306:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/login_screen.dart:147:61 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/login_screen.dart:153:45 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/services/ha_log_database_service.dart:68:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ha_log_database_service.dart:81:7 • avoid_print
+   info • 'printTime' is deprecated and shouldn't be used. Use `dateTimeFormat` with `DateTimeFormat.onlyTimeAndSinceStart` or `DateTimeFormat.none` instead • lib/services/logger_service.dart:11:7 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/services/theme_service.dart:53:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:66:24 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:67:24 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:80:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:82:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:92:34 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:95:34 • deprecated_member_use
+   info • 'DeviceFrameAddon' is deprecated and shouldn't be used. The [DeviceFrameAddon] is deprecated and will be removed in a future version. Please use the [ViewportAddon] instead. More info: https://docs.widgetbook.io/addons/viewport-addon • lib/widgetbook.dart:37:11 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/climate_widget.dart:71:47 • deprecated_member_use
+   info • Unnecessary braces in a string interpolation • lib/widgets/entities/climate_widget.dart:107:26 • unnecessary_brace_in_string_interps
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/climate_widget.dart:140:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/climate_widget.dart:192:61 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/climate_widget.dart:299:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/climate_widget.dart:299:63 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/light_widget.dart:100:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/light_widget.dart:179:34 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/widgets/entities/light_widget.dart:208:13 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/entities/sensor_widget.dart:61:36 • deprecated_member_use
+   info • Unnecessary use of string interpolation • lib/widgets/history_graph_widget.dart:133:21 • unnecessary_string_interpolations
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/history_graph_widget.dart:162:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/history_graph_widget.dart:163:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/voice_assistant_widget.dart:107:51 • deprecated_member_use
+   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/widgets/voice_assistant_widget.dart:108:59 • deprecated_member_use
+
+52 issues found. (ran in 2.3s)

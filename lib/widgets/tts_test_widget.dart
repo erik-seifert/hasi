@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../services/voice_service.dart';
 
 /// A simple widget to test TTS functionality
@@ -180,4 +181,9 @@ class _QuickTestButton extends StatelessWidget {
       child: Text(label),
     );
   }
+}
+
+@widgetbook.UseCase(name: 'Default', type: TtsTestWidget)
+Widget buildTtsTestWidgetUseCase(BuildContext context) {
+  return const TtsTestWidget();
 }

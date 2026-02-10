@@ -78,6 +78,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   widgetbook_generator: ^3.20.1
   build_runner: ^2.11.0
+  msix: ^3.16.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -88,9 +89,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -116,4 +116,11 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+
+msix_config:
+  display_name: HASI
+  publisher_display_name: Erik Seifert
+  identity_name: com.erikseifert.hasi
+  msix_version: 1.0.0.0
+  logo_path: assets/logo.png
+  capabilities: internetClient, location, microphone

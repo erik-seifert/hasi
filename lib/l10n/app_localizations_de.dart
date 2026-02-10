@@ -211,4 +211,61 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get editMode => 'Edit Mode';
+
+  @override
+  String get connectToHA => 'Mit Home Assistant verbinden';
+
+  @override
+  String get discovery => 'Suche';
+
+  @override
+  String get searchingForHA => 'Suche nach Home Assistant Instanzen...';
+
+  @override
+  String get token => 'Token';
+
+  @override
+  String get credentials => 'Anmeldedaten';
+
+  @override
+  String get longLivedToken => 'Langlebiges Zugangs-Token';
+
+  @override
+  String get pasteToken => 'Token einfügen';
+
+  @override
+  String get scanQRCode => 'QR-Code scannen';
+
+  @override
+  String get connectWithToken => 'Mit Token verbinden';
+
+  @override
+  String get username => 'Benutzername';
+
+  @override
+  String get password => 'Passwort';
+
+  @override
+  String get connectWithCredentials => 'Mit Anmeldedaten verbinden';
+
+  @override
+  String get haUrl => 'Home Assistant URL';
+
+  @override
+  String get pleaseEnterUrl => 'Bitte URL eingeben';
+
+  @override
+  String get pleaseEnterToken => 'Bitte Token eingeben';
+
+  @override
+  String get pleaseEnterUsername => 'Bitte Benutzernamen eingeben';
+
+  @override
+  String get pleaseEnterPassword => 'Bitte Passwort eingeben';
+
+  @override
+  String get loginFailed => 'Anmeldung fehlgeschlagen';
+
+  @override
+  String get retry => 'Wiederholen';
 }
