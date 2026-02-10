@@ -95,9 +95,9 @@ sudo snap connect hasi:audio-record
 
 ## Next Steps
 
-- **Users**: See [snap/README.md](README.md) for detailed usage
-- **Developers**: See [snap/CONTRIBUTING.md](CONTRIBUTING.md) for development guide
-- **Commands**: See [snap/SNAP_COMMANDS.md](SNAP_COMMANDS.md) for command reference
+- **Users**: See [SNAP_SETUP.md](SNAP_SETUP.md) for detailed usage
+- **Developers**: See [SNAP_CONTRIBUTING.md](SNAP_CONTRIBUTING.md) for development guide
+- **Commands**: See [SNAP_COMMANDS.md](SNAP_COMMANDS.md) for command reference
 
 ## File Structure
 
@@ -107,10 +107,10 @@ snap/
 ├── gui/
 │   ├── hasi.desktop       # Desktop entry
 │   └── hasi.png           # App icon
-├── README.md              # Detailed documentation
-├── CONTRIBUTING.md        # Development guide
+├── SNAP_SETUP.md          # Detailed documentation
+├── SNAP_CONTRIBUTING.md   # Development guide
 ├── SNAP_COMMANDS.md       # Command reference
-├── QUICK_START.md         # This file
+├── SNAP_QUICK_START.md    # This file
 ├── build-snap.sh          # Build helper script
 └── validate-snap.sh       # Validation script
 ```
