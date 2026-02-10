@@ -163,10 +163,10 @@ jobs:
         run: echo "SNAP_FILE=$(find release_files -name '*.snap' | head -n 1)" >> $GITHUB_ENV
 
       - name: Publish to Snap Store
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         uses: snapcore/action-publish@v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
         with:
           snap: ${{ env.SNAP_FILE }}
-          release: stable
+          release: ${{ startsWith(github.ref, 'refs/tags/v') && 'stable' || 'edge' }}
