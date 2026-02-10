@@ -176,8 +176,3 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
     );
   }
 }
-
-@widgetbook.UseCase(name: 'Default', type: VoiceAssistantWidget)
-Widget buildVoiceAssistantWidgetUseCase(BuildContext context) {
-  return const VoiceAssistantWidget();
-}

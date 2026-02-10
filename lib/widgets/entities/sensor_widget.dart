@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../history_graph_widget.dart';
 import '../../services/hass_websocket_service.dart';
@@ -9,8 +11,14 @@ import '../../utils/date_utils.dart';
 class SensorWidget extends StatelessWidget {
   final String entityId;
   final EntityConfig? config;
+  final List<FlSpot>? mockHistoryData;
 
-  const SensorWidget({super.key, required this.entityId, this.config});
+  const SensorWidget({
+    super.key,
+    required this.entityId,
+    this.config,
+    this.mockHistoryData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +103,7 @@ class SensorWidget extends StatelessWidget {
                     entityId: entityId,
                     friendlyName: friendlyName,
                     historyHours: historyHours,
+                    mockHistoryData: mockHistoryData,
                   ),
                 ),
               ),
@@ -107,10 +116,108 @@ class SensorWidget extends StatelessWidget {
 
 @widgetbook.UseCase(name: 'Temperature', type: SensorWidget)
 Widget buildTemperatureSensorUseCase(BuildContext context) {
-  return const SensorWidget(entityId: 'sensor.room_temp');
+  final historyDataString = context.knobs.string(
+    label: 'History Data (comma separated)',
+    initialValue:
+        '5, 8, 6, 10, 15, 12, 18, 20, 16, 19, 17, 14, 10, 8, 5, 6, 9, 11, 13, 15',
+  );
+
+  List<FlSpot>? mockHistoryData;
+  try {
+    if (historyDataString.isNotEmpty) {
+      final values = historyDataString
+          .split(',')
+          .map((s) => double.tryParse(s.trim()))
+          .whereType<double>()
+          .toList();
+
+      mockHistoryData = List.generate(values.length, (index) {
+        return FlSpot(index.toDouble(), values[index]);
+      });
+    } else {
+      mockHistoryData = [];
+    }
+  } catch (e) {
+    mockHistoryData = [];
+  }
+
+  return SensorWidget(
+    entityId: 'sensor.room_temperature',
+    mockHistoryData: mockHistoryData,
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'Room Temp',
+      ),
+      options: {
+        'show_history': context.knobs.boolean(
+          label: 'Show History',
+          initialValue: true,
+        ),
+        'history_hours': context.knobs.double
+            .slider(
+              label: 'History Hours',
+              initialValue: 24,
+              min: 1,
+              max: 72,
+              divisions: 71,
+            )
+            .toInt(),
+      },
+    ),
+  );
 }
 
 @widgetbook.UseCase(name: 'Humidity', type: SensorWidget)
 Widget buildHumiditySensorUseCase(BuildContext context) {
-  return const SensorWidget(entityId: 'sensor.room_humidity');
+  final historyDataString = context.knobs.string(
+    label: 'History Data (comma separated)',
+    initialValue:
+        '45, 46, 48, 50, 52, 51, 50, 49, 48, 47, 46, 45, 44, 45, 46, 47',
+  );
+
+  List<FlSpot>? mockHistoryData;
+  try {
+    if (historyDataString.isNotEmpty) {
+      final values = historyDataString
+          .split(',')
+          .map((s) => double.tryParse(s.trim()))
+          .whereType<double>()
+          .toList();
+
+      mockHistoryData = List.generate(values.length, (index) {
+        return FlSpot(index.toDouble(), values[index]);
+      });
+    } else {
+      mockHistoryData = [];
+    }
+  } catch (e) {
+    mockHistoryData = [];
+  }
+
+  return SensorWidget(
+    entityId: 'sensor.room_humidity',
+    mockHistoryData: mockHistoryData,
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'Room Humidity',
+      ),
+      options: {
+        'show_history': context.knobs.boolean(
+          label: 'Show History',
+          initialValue: true,
+        ),
+        'history_hours': context.knobs.double
+            .slider(
+              label: 'History Hours',
+              initialValue: 24,
+              min: 1,
+              max: 72,
+              divisions: 71,
+            )
+            .toInt(),
+      },
+    ),
+  );
 }

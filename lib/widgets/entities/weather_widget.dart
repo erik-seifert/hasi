@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/hass_websocket_service.dart';
 import 'package:intl/intl.dart';
+import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../../models/dashboard.dart';
 
 class WeatherWidget extends StatefulWidget {
   final String entityId;
   final EntityConfig? config;
+  final List<dynamic>? mockForecastData;
 
-  const WeatherWidget({super.key, required this.entityId, this.config});
+  const WeatherWidget({
+    super.key,
+    required this.entityId,
+    this.config,
+    this.mockForecastData,
+  });
 
   @override
   State<WeatherWidget> createState() => _WeatherWidgetState();
@@ -22,7 +29,11 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   @override
   void initState() {
     super.initState();
-    _fetchForecast();
+    if (widget.mockForecastData != null) {
+      _forecast = widget.mockForecastData;
+    } else {
+      _fetchForecast();
+    }
   }
 
   @override
@@ -291,5 +302,47 @@ class _WeatherWidgetState extends State<WeatherWidget> {
 
 @widgetbook.UseCase(name: 'Sunny Weather', type: WeatherWidget)
 Widget buildSunnyWeatherUseCase(BuildContext context) {
-  return const WeatherWidget(entityId: 'weather.home');
+  final hasForecast = context.knobs.boolean(
+    label: 'Has Forecast',
+    initialValue: true,
+  );
+
+  List<dynamic>? mockForecast;
+  if (hasForecast) {
+    mockForecast = List.generate(5, (index) {
+      final date = DateTime.now().add(Duration(days: index));
+      return {
+        'datetime': date.toIso8601String(),
+        'condition': 'sunny',
+        'temperature': 22 + index,
+        'templow': 15 + index,
+      };
+    });
+  }
+
+  return WeatherWidget(
+    entityId: 'weather.home',
+    mockForecastData: mockForecast,
+    config: EntityConfig(
+      nameOverride: context.knobs.string(
+        label: 'Name Override',
+        initialValue: 'Home Weather',
+      ),
+      options: {
+        'show_forecast': context.knobs.boolean(
+          label: 'Show Forecast',
+          initialValue: true,
+        ),
+        'forecast_count': context.knobs.double
+            .slider(
+              label: 'Forecast Count',
+              initialValue: 5,
+              min: 1,
+              max: 10,
+              divisions: 9,
+            )
+            .toInt(),
+      },
+    ),
+  );
 }
