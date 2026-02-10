@@ -168,7 +168,7 @@ Verify all required permissions work:
          - new-permission
    ```
 
-3. Document the permission in `snap/README.md`
+3. Document the permission in `doc/SNAP_SETUP.md`
 4. Test the permission works
 
 ### Updating Dependencies
