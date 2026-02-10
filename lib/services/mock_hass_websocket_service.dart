@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'hass_websocket_service.dart';
 
 class MockHassWebSocketService extends HassWebSocketService {
@@ -40,7 +41,8 @@ class MockHassWebSocketService extends HassWebSocketService {
     Map<String, dynamic>? serviceData,
     bool returnResponse = false,
   }) async {
-    print('Mock callService: $domain.$service with $serviceData');
+    // Mock log
+    debugPrint('Mock callService: $domain.$service with $serviceData');
 
     if (serviceData != null && serviceData.containsKey('entity_id')) {
       final entityId = serviceData['entity_id'];
