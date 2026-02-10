@@ -74,6 +74,8 @@ parts:
       - libsqlite3-dev
       - libavahi-client-dev
       - libavahi-common-dev
+      - libunistring-dev
+      - libnm-dev
     stage-packages:
       - libgtk-3-0
       - libgdk-pixbuf2.0-0
@@ -87,6 +89,7 @@ parts:
       - libpulse0
       - libsndfile1
       - libasound2
+      - libnm0
     override-build: |
       rm -rf build/
       craftctl default

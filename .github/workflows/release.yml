@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build-linux-snap:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,7 +24,10 @@ jobs:
           channel: 'stable'
           cache: true
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libnm-dev libsecret-1-dev libunistring-dev
+          flutter pub get
       - name: Install Snapcraft
         run: sudo snap install snapcraft --classic
       - name: Build Snap
@@ -41,7 +44,7 @@ jobs:
           path: '*.snap'
 
   build-linux-appimage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -52,7 +55,7 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libnm-dev libsecret-1-dev
+          sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libnm-dev libsecret-1-dev libunistring-dev
       
       - name: Get dependencies
         run: flutter pub get
