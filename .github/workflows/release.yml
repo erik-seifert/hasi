@@ -116,8 +116,8 @@ jobs:
       
       - name: Prepare Assets
         run: |
-          copy build\windows\runner\release\HASI.msix HASI-windows.msix
-          Compress-Archive -Path build\windows\runner\release\* -DestinationPath HASI-windows-bundle.zip
+          copy build\windows\x64\runner\Release\hasi.msix HASI-windows.msix
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath HASI-windows-bundle.zip
       
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -156,6 +156,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to Snap Store
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: snapcore/action-publish@v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
