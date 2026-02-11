@@ -162,6 +162,12 @@ abstract class AppLocalizations {
   /// **'Appearance'**
   String get appearance;
 
+  /// No description provided for @dashboardSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard Settings'**
+  String get dashboardSettings;
+
   /// No description provided for @editDashboard.
   ///
   /// In en, this message translates to:
@@ -605,6 +611,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @assist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist'**
+  String get assist;
+
+  /// No description provided for @assistCommandError.
+  ///
+  /// In en, this message translates to:
+  /// **'I couldn\'t process that command.'**
+  String get assistCommandError;
+
+  /// No description provided for @assistTypeCommand.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a command...'**
+  String get assistTypeCommand;
+
+  /// No description provided for @assistListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening...'**
+  String get assistListening;
+
+  /// No description provided for @ttsTest.
+  ///
+  /// In en, this message translates to:
+  /// **'TTS Test'**
+  String get ttsTest;
+
+  /// No description provided for @ttsEngineStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'TTS Engine Status'**
+  String get ttsEngineStatus;
+
+  /// No description provided for @ttsUsingNative.
+  ///
+  /// In en, this message translates to:
+  /// **'Using native Linux TTS: {engine}'**
+  String ttsUsingNative(Object engine);
+
+  /// No description provided for @ttsUsingFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Using flutter_tts (fallback)'**
+  String get ttsUsingFallback;
+
+  /// No description provided for @ttsTextToSpeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Text to speak'**
+  String get ttsTextToSpeak;
+
+  /// No description provided for @ttsEnterText.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter text to convert to speech...'**
+  String get ttsEnterText;
+
+  /// No description provided for @ttsSpeaking.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking...'**
+  String get ttsSpeaking;
+
+  /// No description provided for @ttsSpeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak'**
+  String get ttsSpeak;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @ttsQuickTests.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Tests:'**
+  String get ttsQuickTests;
+
+  /// No description provided for @ttsTestHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get ttsTestHello;
+
+  /// No description provided for @ttsTestHelloText.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, how are you?'**
+  String get ttsTestHelloText;
+
+  /// No description provided for @ttsTestNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers'**
+  String get ttsTestNumbers;
+
+  /// No description provided for @ttsTestNumbersText.
+  ///
+  /// In en, this message translates to:
+  /// **'One, two, three, four, five'**
+  String get ttsTestNumbersText;
+
+  /// No description provided for @ttsTestLongText.
+  ///
+  /// In en, this message translates to:
+  /// **'Long Text'**
+  String get ttsTestLongText;
+
+  /// No description provided for @ttsTestLongTextContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a longer test to demonstrate how the text to speech engine handles multiple sentences. It should sound natural and clear.'**
+  String get ttsTestLongTextContent;
+
+  /// No description provided for @addCustomWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Custom Widget'**
+  String get addCustomWidget;
+
+  /// No description provided for @editCustomWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Custom Widget'**
+  String get editCustomWidget;
+
+  /// No description provided for @widgetType.
+  ///
+  /// In en, this message translates to:
+  /// **'Widget Type'**
+  String get widgetType;
+
+  /// No description provided for @markdownContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Markdown Content'**
+  String get markdownContent;
+
+  /// No description provided for @markdownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your markdown text here...\n\nExample:\n# Title\n**Bold text**\n* Italic text\n- List item'**
+  String get markdownHint;
+
+  /// No description provided for @imageFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Image File'**
+  String get imageFile;
+
+  /// No description provided for @selectImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get selectImage;
+
+  /// No description provided for @changeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Image'**
+  String get changeImage;
+
+  /// No description provided for @imageFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Fit'**
+  String get imageFit;
+
+  /// No description provided for @fitWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit Width'**
+  String get fitWidth;
+
+  /// No description provided for @fitHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit Height'**
+  String get fitHeight;
+
+  /// No description provided for @errorPickingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error picking image: {error}'**
+  String errorPickingImage(Object error);
+
+  /// No description provided for @pleaseSelectImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an image'**
+  String get pleaseSelectImage;
+
+  /// No description provided for @addWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Widget'**
+  String get addWidget;
+
+  /// No description provided for @customWidgets.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Widgets'**
+  String get customWidgets;
+
+  /// No description provided for @textWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Widget'**
+  String get textWidget;
+
+  /// No description provided for @textWidgetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add custom text with formatting'**
+  String get textWidgetDescription;
+
+  /// No description provided for @imageWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Widget'**
+  String get imageWidget;
+
+  /// No description provided for @imageWidgetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an image from your device'**
+  String get imageWidgetDescription;
+
+  /// No description provided for @homeAssistantEntities.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Assistant Entities'**
+  String get homeAssistantEntities;
+
+  /// No description provided for @removeColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Column'**
+  String get removeColumn;
+
+  /// No description provided for @addColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Column'**
+  String get addColumn;
+
+  /// No description provided for @hasiDashboards.
+  ///
+  /// In en, this message translates to:
+  /// **'Hasi Dashboards'**
+  String get hasiDashboards;
+
+  /// No description provided for @manualEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual / Empty'**
+  String get manualEmpty;
+
+  /// No description provided for @viewRawRequestsResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'View raw requests and responses'**
+  String get viewRawRequestsResponses;
+
+  /// No description provided for @noLogsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs found'**
+  String get noLogsFound;
+
+  /// No description provided for @logDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Detail'**
+  String get logDetail;
 }
 
 class _AppLocalizationsDelegate

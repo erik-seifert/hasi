@@ -39,6 +39,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appearance => 'Erscheinungsbild';
 
   @override
+  String get dashboardSettings => 'Dashboard-Einstellungen';
+
+  @override
   String get editDashboard => 'Dashboard bearbeiten';
 
   @override
@@ -178,39 +181,39 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das letzte Dashboard kann nicht gelöscht werden. Mindestens ein Dashboard ist erforderlich.';
 
   @override
-  String get setupDashboards => 'Setup Dashboards';
+  String get setupDashboards => 'Dashboards einrichten';
 
   @override
-  String get createDashboards => 'Create Dashboards';
+  String get createDashboards => 'Dashboards erstellen';
 
   @override
-  String get noAreasFoundSetup => 'No Areas Found';
+  String get noAreasFoundSetup => 'Keine Bereiche gefunden';
 
   @override
   String get noAreasFoundSetupSub =>
-      'Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.';
+      'Erstellen Sie Bereiche in Home Assistant, um Ihre Entitäten zu organisieren, oder erstellen Sie ein leeres Dashboard, um zu beginnen.';
 
   @override
-  String get createEmptyDashboard => 'Create Empty Dashboard';
+  String get createEmptyDashboard => 'Leeres Dashboard erstellen';
 
   @override
-  String get welcomeToHasi => 'Welcome to Hasi!';
+  String get welcomeToHasi => 'Willkommen bei Hasi!';
 
   @override
   String get selectAreasToCreateDashboards =>
-      'Select areas to automatically create dashboards for each one.';
+      'Wählen Sie Bereiche aus, um automatisch Dashboards für jeden zu erstellen.';
 
   @override
-  String get areasSelected => 'areas selected';
+  String get areasSelected => 'Bereiche ausgewählt';
 
   @override
-  String get entity => 'entity';
+  String get entity => 'Entität';
 
   @override
-  String get entities => 'entities';
+  String get entities => 'Entitäten';
 
   @override
-  String get editMode => 'Edit Mode';
+  String get editMode => 'Bearbeitungsmodus';
 
   @override
   String get connectToHA => 'Mit Home Assistant verbinden';
@@ -268,4 +271,153 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get retry => 'Wiederholen';
+
+  @override
+  String get assist => 'Assistent';
+
+  @override
+  String get assistCommandError =>
+      'Ich konnte diesen Befehl nicht verarbeiten.';
+
+  @override
+  String get assistTypeCommand => 'Befehl eingeben...';
+
+  @override
+  String get assistListening => 'Höre zu...';
+
+  @override
+  String get ttsTest => 'TTS-Test';
+
+  @override
+  String get ttsEngineStatus => 'TTS-Engine-Status';
+
+  @override
+  String ttsUsingNative(Object engine) {
+    return 'Verwende native Linux TTS: $engine';
+  }
+
+  @override
+  String get ttsUsingFallback => 'Verwende flutter_tts (Fallback)';
+
+  @override
+  String get ttsTextToSpeak => 'Zu sprechender Text';
+
+  @override
+  String get ttsEnterText => 'Text zur Sprachausgabe eingeben...';
+
+  @override
+  String get ttsSpeaking => 'Spreche...';
+
+  @override
+  String get ttsSpeak => 'Sprechen';
+
+  @override
+  String get stop => 'Stopp';
+
+  @override
+  String get ttsQuickTests => 'Schnelltests:';
+
+  @override
+  String get ttsTestHello => 'Hallo';
+
+  @override
+  String get ttsTestHelloText => 'Hallo, wie geht es dir?';
+
+  @override
+  String get ttsTestNumbers => 'Zahlen';
+
+  @override
+  String get ttsTestNumbersText => 'Eins, zwei, drei, vier, fünf';
+
+  @override
+  String get ttsTestLongText => 'Langer Text';
+
+  @override
+  String get ttsTestLongTextContent =>
+      'Dies ist ein längerer Test, um zu demonstrieren, wie die Sprachausgabe mehrere Sätze verarbeitet. Es sollte natürlich und klar klingen.';
+
+  @override
+  String get addCustomWidget => 'Benutzerdefiniertes Widget hinzufügen';
+
+  @override
+  String get editCustomWidget => 'Benutzerdefiniertes Widget bearbeiten';
+
+  @override
+  String get widgetType => 'Widget-Typ';
+
+  @override
+  String get markdownContent => 'Markdown-Inhalt';
+
+  @override
+  String get markdownHint =>
+      'Geben Sie hier Ihren Markdown-Text ein...\n\nBeispiel:\n# Titel\n**Fetter Text**\n* Kursiver Text\n- Listenelement';
+
+  @override
+  String get imageFile => 'Bilddatei';
+
+  @override
+  String get selectImage => 'Bild auswählen';
+
+  @override
+  String get changeImage => 'Bild ändern';
+
+  @override
+  String get imageFit => 'Bildanpassung';
+
+  @override
+  String get fitWidth => 'An Breite anpassen';
+
+  @override
+  String get fitHeight => 'An Höhe anpassen';
+
+  @override
+  String errorPickingImage(Object error) {
+    return 'Fehler beim Auswählen des Bildes: $error';
+  }
+
+  @override
+  String get pleaseSelectImage => 'Bitte wählen Sie ein Bild aus';
+
+  @override
+  String get addWidget => 'Widget hinzufügen';
+
+  @override
+  String get customWidgets => 'Benutzerdefinierte Widgets';
+
+  @override
+  String get textWidget => 'Text-Widget';
+
+  @override
+  String get textWidgetDescription =>
+      'Benutzerdefinierten Text mit Formatierung hinzufügen';
+
+  @override
+  String get imageWidget => 'Bild-Widget';
+
+  @override
+  String get imageWidgetDescription => 'Ein Bild von Ihrem Gerät hinzufügen';
+
+  @override
+  String get homeAssistantEntities => 'Home Assistant Entitäten';
+
+  @override
+  String get removeColumn => 'Spalte entfernen';
+
+  @override
+  String get addColumn => 'Spalte hinzufügen';
+
+  @override
+  String get hasiDashboards => 'Hasi Dashboards';
+
+  @override
+  String get manualEmpty => 'Manuell / Leer';
+
+  @override
+  String get viewRawRequestsResponses => 'Rohe Anfragen und Antworten anzeigen';
+
+  @override
+  String get noLogsFound => 'Keine Protokolle gefunden';
+
+  @override
+  String get logDetail => 'Protokolldetails';
 }

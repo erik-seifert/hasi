@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appearance => 'Appearance';
 
   @override
+  String get dashboardSettings => 'Dashboard Settings';
+
+  @override
   String get editDashboard => 'Edit Dashboard';
 
   @override
@@ -267,4 +270,151 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get assist => 'Assist';
+
+  @override
+  String get assistCommandError => 'I couldn\'t process that command.';
+
+  @override
+  String get assistTypeCommand => 'Type a command...';
+
+  @override
+  String get assistListening => 'Listening...';
+
+  @override
+  String get ttsTest => 'TTS Test';
+
+  @override
+  String get ttsEngineStatus => 'TTS Engine Status';
+
+  @override
+  String ttsUsingNative(Object engine) {
+    return 'Using native Linux TTS: $engine';
+  }
+
+  @override
+  String get ttsUsingFallback => 'Using flutter_tts (fallback)';
+
+  @override
+  String get ttsTextToSpeak => 'Text to speak';
+
+  @override
+  String get ttsEnterText => 'Enter text to convert to speech...';
+
+  @override
+  String get ttsSpeaking => 'Speaking...';
+
+  @override
+  String get ttsSpeak => 'Speak';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get ttsQuickTests => 'Quick Tests:';
+
+  @override
+  String get ttsTestHello => 'Hello';
+
+  @override
+  String get ttsTestHelloText => 'Hello, how are you?';
+
+  @override
+  String get ttsTestNumbers => 'Numbers';
+
+  @override
+  String get ttsTestNumbersText => 'One, two, three, four, five';
+
+  @override
+  String get ttsTestLongText => 'Long Text';
+
+  @override
+  String get ttsTestLongTextContent =>
+      'This is a longer test to demonstrate how the text to speech engine handles multiple sentences. It should sound natural and clear.';
+
+  @override
+  String get addCustomWidget => 'Add Custom Widget';
+
+  @override
+  String get editCustomWidget => 'Edit Custom Widget';
+
+  @override
+  String get widgetType => 'Widget Type';
+
+  @override
+  String get markdownContent => 'Markdown Content';
+
+  @override
+  String get markdownHint =>
+      'Enter your markdown text here...\n\nExample:\n# Title\n**Bold text**\n* Italic text\n- List item';
+
+  @override
+  String get imageFile => 'Image File';
+
+  @override
+  String get selectImage => 'Select Image';
+
+  @override
+  String get changeImage => 'Change Image';
+
+  @override
+  String get imageFit => 'Image Fit';
+
+  @override
+  String get fitWidth => 'Fit Width';
+
+  @override
+  String get fitHeight => 'Fit Height';
+
+  @override
+  String errorPickingImage(Object error) {
+    return 'Error picking image: $error';
+  }
+
+  @override
+  String get pleaseSelectImage => 'Please select an image';
+
+  @override
+  String get addWidget => 'Add Widget';
+
+  @override
+  String get customWidgets => 'Custom Widgets';
+
+  @override
+  String get textWidget => 'Text Widget';
+
+  @override
+  String get textWidgetDescription => 'Add custom text with formatting';
+
+  @override
+  String get imageWidget => 'Image Widget';
+
+  @override
+  String get imageWidgetDescription => 'Add an image from your device';
+
+  @override
+  String get homeAssistantEntities => 'Home Assistant Entities';
+
+  @override
+  String get removeColumn => 'Remove Column';
+
+  @override
+  String get addColumn => 'Add Column';
+
+  @override
+  String get hasiDashboards => 'Hasi Dashboards';
+
+  @override
+  String get manualEmpty => 'Manual / Empty';
+
+  @override
+  String get viewRawRequestsResponses => 'View raw requests and responses';
+
+  @override
+  String get noLogsFound => 'No logs found';
+
+  @override
+  String get logDetail => 'Log Detail';
 }

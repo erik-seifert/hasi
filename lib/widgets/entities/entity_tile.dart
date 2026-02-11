@@ -39,8 +39,9 @@ class EntityTile extends StatelessWidget {
 
   IconData _getIconForEntity(String entityId, Map<String, dynamic> attributes) {
     if (entityId.startsWith('switch.')) return Icons.toggle_on;
-    if (entityId.startsWith('binary_sensor.'))
+    if (entityId.startsWith('binary_sensor.')) {
       return Icons.radio_button_checked;
+    }
     if (entityId.startsWith('input_boolean.')) return Icons.check_box;
     if (entityId.startsWith('automation.')) return Icons.play_circle_outline;
     if (entityId.startsWith('script.')) return Icons.description;

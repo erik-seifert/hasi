@@ -6,6 +6,16 @@ A modern, cross-platform Home Assistant client built with Flutter. Hasi provides
   <img src="assets/logo.png" width="128" alt="Hasi Logo" />
 </p>
 
+## Table of Contents
+
+- [Snap Installation & Setup](doc/SNAP_SETUP.md)
+- [Snap Quick Start Guide](doc/SNAP_QUICK_START.md)
+- [Snap Commands Reference](doc/SNAP_COMMANDS.md)
+- [Snap Contribution Guide](doc/SNAP_CONTRIBUTING.md)
+- [Voice Assistant (TTS) Setup](doc/TTS_SETUP.md)
+- [iOS Launch Screen Customization](doc/IOS_LAUNCH_SCREEN.md)
+- [Pull Request Template](doc/PULL_REQUEST_TEMPLATE.md)
+
 ## Features
 
 - 🏠 **Connect to Home Assistant** via WebSocket
@@ -37,7 +47,7 @@ After installation, launch from your application menu or run:
 hasi
 ```
 
-For more details on building and testing the snap, see [snap/README.md](snap/README.md).
+For more details on building and testing the snap, see [doc/SNAP_SETUP.md](doc/SNAP_SETUP.md).
 
 ### Build from Source
 
@@ -99,7 +109,16 @@ lib/
 snap/                         # Snap packaging configuration
 ├── snapcraft.yaml           # Snap build configuration
 ├── gui/                     # Desktop integration files
-└── README.md                # Snap documentation
+└── local/                   # Build and validation scripts (Docs moved to doc/)
+
+doc/                         # Consolidated project documentation
+├── SNAP_SETUP.md            # Snap installation and development
+├── SNAP_QUICK_START.md      # Quick guide for snap builds
+├── SNAP_COMMANDS.md         # Reference for snap-related commands
+├── SNAP_CONTRIBUTING.md     # How to contribute to snap packaging
+├── TTS_SETUP.md             # Voice assistant configuration
+├── IOS_LAUNCH_SCREEN.md     # iOS asset customization
+└── PULL_REQUEST_TEMPLATE.md # Template for contributions
 ```
 
 ### Running Tests
@@ -148,7 +167,7 @@ snapcraft
 sudo snap install hasi_1.0.0_amd64.snap --dangerous
 ```
 
-See [snap/README.md](snap/README.md) for detailed snap development instructions.
+See [doc/SNAP_SETUP.md](doc/SNAP_SETUP.md) for detailed snap development instructions.
 
 ## Contributing
 

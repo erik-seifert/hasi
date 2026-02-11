@@ -39,8 +39,8 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
     return AlertDialog(
       title: Text(
         widget.existingWidget == null
-            ? 'Add Custom Widget'
-            : 'Edit Custom Widget',
+            ? l10n.addCustomWidget
+            : l10n.editCustomWidget,
       ),
       content: SizedBox(
         width: 500,
@@ -51,7 +51,7 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
             children: [
               if (widget.existingWidget == null) ...[
                 Text(
-                  'Widget Type',
+                  l10n.widgetType,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
@@ -103,7 +103,7 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Markdown Content',
+          l10n.markdownContent,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
@@ -111,10 +111,9 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
           controller: TextEditingController(text: text)
             ..selection = TextSelection.collapsed(offset: text.length),
           maxLines: 8,
-          decoration: const InputDecoration(
-            hintText:
-                'Enter your markdown text here...\n\nExample:\n# Title\n**Bold text**\n* Italic text\n- List item',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            hintText: l10n.markdownHint,
+            border: const OutlineInputBorder(),
           ),
           onChanged: (value) {
             _config[TextWidgetConfig.text] = value;
@@ -132,12 +131,12 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Image File', style: Theme.of(context).textTheme.titleMedium),
+        Text(l10n.imageFile, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: _pickImage,
           icon: const Icon(Icons.folder_open),
-          label: Text(imagePath.isEmpty ? 'Select Image' : 'Change Image'),
+          label: Text(imagePath.isEmpty ? l10n.selectImage : l10n.changeImage),
         ),
         if (imagePath.isNotEmpty) ...[
           const SizedBox(height: 8),
@@ -149,18 +148,18 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
           ),
         ],
         const SizedBox(height: 16),
-        Text('Image Fit', style: Theme.of(context).textTheme.titleMedium),
+        Text(l10n.imageFit, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           initialValue: fit,
           decoration: const InputDecoration(border: OutlineInputBorder()),
-          items: const [
-            DropdownMenuItem(value: 'cover', child: Text('Cover')),
-            DropdownMenuItem(value: 'contain', child: Text('Contain')),
-            DropdownMenuItem(value: 'fill', child: Text('Fill')),
-            DropdownMenuItem(value: 'fitWidth', child: Text('Fit Width')),
-            DropdownMenuItem(value: 'fitHeight', child: Text('Fit Height')),
-            DropdownMenuItem(value: 'none', child: Text('None')),
+          items: [
+            const DropdownMenuItem(value: 'cover', child: Text('Cover')),
+            const DropdownMenuItem(value: 'contain', child: Text('Contain')),
+            const DropdownMenuItem(value: 'fill', child: Text('Fill')),
+            DropdownMenuItem(value: 'fitWidth', child: Text(l10n.fitWidth)),
+            DropdownMenuItem(value: 'fitHeight', child: Text(l10n.fitHeight)),
+            const DropdownMenuItem(value: 'none', child: Text('None')),
           ],
           onChanged: (value) {
             if (value != null) {
@@ -213,13 +212,14 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
   }
 
   void _saveWidget() {
+    final l10n = AppLocalizations.of(context)!;
     // Validate based on type
     if (_selectedType == CustomWidgetType.image) {
       final imagePath = _config[ImageWidgetConfig.imagePath] as String?;
       if (imagePath == null || imagePath.isEmpty) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Please select an image')));
+        ).showSnackBar(SnackBar(content: Text(l10n.pleaseSelectImage)));
         return;
       }
     }

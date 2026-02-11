@@ -254,4 +254,4 @@ When running the snap, these environment variables are set:
 - [Snapcraft Documentation](https://snapcraft.io/docs)
 - [Snap Store](https://snapcraft.io/store)
 - [Snapcraft Forum](https://forum.snapcraft.io/)
-- [Hasi Snap README](README.md)
+- [Hasi Snap README](SNAP_SETUP.md)

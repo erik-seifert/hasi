@@ -39,6 +39,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appearance => 'Apparence';
 
   @override
+  String get dashboardSettings => 'Paramètres du tableau de bord';
+
+  @override
   String get editDashboard => 'Modifier le tableau de bord';
 
   @override
@@ -178,94 +181,243 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de supprimer le dernier tableau de bord. Au moins un tableau de bord est requis.';
 
   @override
-  String get setupDashboards => 'Setup Dashboards';
+  String get setupDashboards => 'Configurer les tableaux de bord';
 
   @override
-  String get createDashboards => 'Create Dashboards';
+  String get createDashboards => 'Créer des tableaux de bord';
 
   @override
-  String get noAreasFoundSetup => 'No Areas Found';
+  String get noAreasFoundSetup => 'Aucune zone trouvée';
 
   @override
   String get noAreasFoundSetupSub =>
-      'Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.';
+      'Créez des zones dans Home Assistant pour organiser vos entités, ou créez un tableau de bord vide pour commencer.';
 
   @override
-  String get createEmptyDashboard => 'Create Empty Dashboard';
+  String get createEmptyDashboard => 'Créer un tableau de bord vide';
 
   @override
-  String get welcomeToHasi => 'Welcome to Hasi!';
+  String get welcomeToHasi => 'Bienvenue sur Hasi !';
 
   @override
   String get selectAreasToCreateDashboards =>
-      'Select areas to automatically create dashboards for each one.';
+      'Sélectionnez des zones pour créer automatiquement des tableaux de bord pour chacune.';
 
   @override
-  String get areasSelected => 'areas selected';
+  String get areasSelected => 'zones sélectionnées';
 
   @override
-  String get entity => 'entity';
+  String get entity => 'entité';
 
   @override
-  String get entities => 'entities';
+  String get entities => 'entités';
 
   @override
-  String get editMode => 'Edit Mode';
+  String get editMode => 'Mode édition';
 
   @override
-  String get connectToHA => 'Connect to Home Assistant';
+  String get connectToHA => 'Se connecter à Home Assistant';
 
   @override
-  String get discovery => 'Discovery';
+  String get discovery => 'Découverte';
 
   @override
-  String get searchingForHA => 'Searching for Home Assistant instances...';
+  String get searchingForHA => 'Recherche d\'instances Home Assistant...';
 
   @override
-  String get token => 'Token';
+  String get token => 'Jeton';
 
   @override
-  String get credentials => 'Credentials';
+  String get credentials => 'Identifiants';
 
   @override
-  String get longLivedToken => 'Long-Lived Access Token';
+  String get longLivedToken => 'Jeton d\'accès longue durée';
 
   @override
-  String get pasteToken => 'Paste token';
+  String get pasteToken => 'Coller le jeton';
 
   @override
-  String get scanQRCode => 'Scan QR Code';
+  String get scanQRCode => 'Scanner le code QR';
 
   @override
-  String get connectWithToken => 'Connect with Token';
+  String get connectWithToken => 'Se connecter avec un jeton';
 
   @override
-  String get username => 'Username';
+  String get username => 'Nom d\'utilisateur';
 
   @override
-  String get password => 'Password';
+  String get password => 'Mot de passe';
 
   @override
-  String get connectWithCredentials => 'Connect with Credentials';
+  String get connectWithCredentials => 'Se connecter avec des identifiants';
 
   @override
-  String get haUrl => 'Home Assistant URL';
+  String get haUrl => 'URL Home Assistant';
 
   @override
-  String get pleaseEnterUrl => 'Please enter URL';
+  String get pleaseEnterUrl => 'Veuillez entrer l\'URL';
 
   @override
-  String get pleaseEnterToken => 'Please enter token';
+  String get pleaseEnterToken => 'Veuillez entrer le jeton';
 
   @override
-  String get pleaseEnterUsername => 'Please enter username';
+  String get pleaseEnterUsername => 'Veuillez entrer le nom d\'utilisateur';
 
   @override
-  String get pleaseEnterPassword => 'Please enter password';
+  String get pleaseEnterPassword => 'Veuillez entrer le mot de passe';
 
   @override
-  String get loginFailed => 'Login failed';
+  String get loginFailed => 'Échec de la connexion';
 
   @override
-  String get retry => 'Retry';
+  String get retry => 'Réessayer';
+
+  @override
+  String get assist => 'Assistant';
+
+  @override
+  String get assistCommandError => 'Je n\'ai pas pu traiter cette commande.';
+
+  @override
+  String get assistTypeCommand => 'Tapez une commande...';
+
+  @override
+  String get assistListening => 'Écoute...';
+
+  @override
+  String get ttsTest => 'Test TTS';
+
+  @override
+  String get ttsEngineStatus => 'État du moteur TTS';
+
+  @override
+  String ttsUsingNative(Object engine) {
+    return 'Utilisation du TTS natif Linux : $engine';
+  }
+
+  @override
+  String get ttsUsingFallback => 'Utilisation de flutter_tts (secours)';
+
+  @override
+  String get ttsTextToSpeak => 'Texte à prononcer';
+
+  @override
+  String get ttsEnterText => 'Entrez le texte à convertir en parole...';
+
+  @override
+  String get ttsSpeaking => 'Parle...';
+
+  @override
+  String get ttsSpeak => 'Parler';
+
+  @override
+  String get stop => 'Arrêter';
+
+  @override
+  String get ttsQuickTests => 'Tests rapides :';
+
+  @override
+  String get ttsTestHello => 'Bonjour';
+
+  @override
+  String get ttsTestHelloText => 'Bonjour, comment allez-vous ?';
+
+  @override
+  String get ttsTestNumbers => 'Nombres';
+
+  @override
+  String get ttsTestNumbersText => 'Un, deux, trois, quatre, cinq';
+
+  @override
+  String get ttsTestLongText => 'Texte long';
+
+  @override
+  String get ttsTestLongTextContent =>
+      'Ceci est un test plus long pour démontrer comment le moteur de synthèse vocale gère plusieurs phrases. Cela devrait sonner naturel et clair.';
+
+  @override
+  String get addCustomWidget => 'Ajouter un widget personnalisé';
+
+  @override
+  String get editCustomWidget => 'Modifier le widget personnalisé';
+
+  @override
+  String get widgetType => 'Type de widget';
+
+  @override
+  String get markdownContent => 'Contenu Markdown';
+
+  @override
+  String get markdownHint =>
+      'Entrez votre texte markdown ici...\n\nExemple :\n# Titre\n**Texte en gras**\n* Texte en italique\n- Élément de liste';
+
+  @override
+  String get imageFile => 'Fichier image';
+
+  @override
+  String get selectImage => 'Sélectionner une image';
+
+  @override
+  String get changeImage => 'Changer l\'image';
+
+  @override
+  String get imageFit => 'Ajustement de l\'image';
+
+  @override
+  String get fitWidth => 'Ajuster à la largeur';
+
+  @override
+  String get fitHeight => 'Ajuster à la hauteur';
+
+  @override
+  String errorPickingImage(Object error) {
+    return 'Erreur lors de la sélection de l\'image : $error';
+  }
+
+  @override
+  String get pleaseSelectImage => 'Veuillez sélectionner une image';
+
+  @override
+  String get addWidget => 'Ajouter un widget';
+
+  @override
+  String get customWidgets => 'Widgets personnalisés';
+
+  @override
+  String get textWidget => 'Widget de texte';
+
+  @override
+  String get textWidgetDescription =>
+      'Ajouter du texte personnalisé avec formatage';
+
+  @override
+  String get imageWidget => 'Widget d\'image';
+
+  @override
+  String get imageWidgetDescription =>
+      'Ajouter une image depuis votre appareil';
+
+  @override
+  String get homeAssistantEntities => 'Entités Home Assistant';
+
+  @override
+  String get removeColumn => 'Supprimer la colonne';
+
+  @override
+  String get addColumn => 'Ajouter une colonne';
+
+  @override
+  String get hasiDashboards => 'Tableaux de bord Hasi';
+
+  @override
+  String get manualEmpty => 'Manuel / Vide';
+
+  @override
+  String get viewRawRequestsResponses => 'Voir les requêtes et réponses brutes';
+
+  @override
+  String get noLogsFound => 'Aucun journal trouvé';
+
+  @override
+  String get logDetail => 'Détail du journal';
 }

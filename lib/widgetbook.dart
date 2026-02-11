@@ -147,6 +147,10 @@ class WidgetbookApp extends StatelessWidget {
       child: Widgetbook.material(
         directories: directories,
         addons: [
+          ViewportAddon([
+            IosViewports.iPhone13,
+            AndroidViewports.samsungGalaxyS20,
+          ]),
           MaterialThemeAddon(
             themes: [
               WidgetbookTheme(
@@ -155,9 +159,6 @@ class WidgetbookApp extends StatelessWidget {
               ),
               WidgetbookTheme(name: 'Dark', data: themeService.getDarkTheme()),
             ],
-          ),
-          DeviceFrameAddon(
-            devices: [Devices.ios.iPhone13, Devices.android.samsungGalaxyS20],
           ),
         ],
       ),

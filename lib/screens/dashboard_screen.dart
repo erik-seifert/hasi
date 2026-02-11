@@ -142,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       dashService.updateDashboard(updated);
                     }
                   : null,
-              tooltip: 'Remove Column',
+              tooltip: l10n.removeColumn,
             ),
             Text(
               '${activeDash.columnCount}',
@@ -165,7 +165,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       dashService.updateDashboard(updated);
                     }
                   : null,
-              tooltip: 'Add Column',
+              tooltip: l10n.addColumn,
             ),
             const VerticalDivider(width: 1, indent: 12, endIndent: 12),
           ],
@@ -178,6 +178,13 @@ class _DashboardScreenState extends State<DashboardScreen>
             },
             tooltip: _isEditMode ? l10n.save : l10n.editMode,
           ),
+          if (_isEditMode && activeDash != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              onPressed: () =>
+                  _showDeleteConfirmDialog(context, activeDash, dashService),
+              tooltip: l10n.deleteDashboard,
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: isAuthenticated ? () => wsRead.getStates() : null,
@@ -270,9 +277,9 @@ class _DashboardScreenState extends State<DashboardScreen>
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Hasi Dashboards',
+                l10n.hasiDashboards,
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
@@ -1433,11 +1440,9 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
 
     if (confirmed == true && mounted) {
-      // Check if it's a custom widget or entity
       if (activeDash.customWidgets.containsKey(widgetId)) {
         await dashService.removeCustomWidget(activeDash.id, widgetId);
       } else {
-        // Remove entity from dashboard
         final updatedColumns = activeDash.columns.map((col) {
           return col.where((id) => id != widgetId).toList();
         }).toList();
@@ -1464,6 +1469,35 @@ class _DashboardScreenState extends State<DashboardScreen>
           ),
         );
       }
+    }
+  }
+
+  Future<void> _showDeleteConfirmDialog(
+    BuildContext context,
+    Dashboard dashboard,
+    DashboardService dashService,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteDashboard),
+        content: Text(l10n.deleteConfirm(dashboard.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await dashService.deleteDashboard(dashboard.id);
     }
   }
 }

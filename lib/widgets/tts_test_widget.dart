@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
 import '../services/voice_service.dart';
 
 /// A simple widget to test TTS functionality
@@ -25,9 +26,10 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
   @override
   Widget build(BuildContext context) {
     final voiceService = Provider.of<VoiceService>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('TTS Test')),
+      appBar: AppBar(title: Text(l10n.ttsTest)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -44,7 +46,7 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'TTS Engine Status',
+                      l10n.ttsEngineStatus,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -64,8 +66,10 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
                         Expanded(
                           child: Text(
                             voiceService.useNativeTts
-                                ? 'Using native Linux TTS: ${voiceService.linuxTtsEngine}'
-                                : 'Using flutter_tts (fallback)',
+                                ? l10n.ttsUsingNative(
+                                    voiceService.linuxTtsEngine ?? 'Unknown',
+                                  )
+                                : l10n.ttsUsingFallback,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
@@ -81,10 +85,10 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
             TextField(
               controller: _textController,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Text to speak',
-                border: OutlineInputBorder(),
-                hintText: 'Enter text to convert to speech...',
+              decoration: InputDecoration(
+                labelText: l10n.ttsTextToSpeak,
+                border: const OutlineInputBorder(),
+                hintText: l10n.ttsEnterText,
               ),
             ),
             const SizedBox(height: 16),
@@ -102,7 +106,9 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
               icon: Icon(
                 voiceService.isSpeaking ? Icons.volume_up : Icons.play_arrow,
               ),
-              label: Text(voiceService.isSpeaking ? 'Speaking...' : 'Speak'),
+              label: Text(
+                voiceService.isSpeaking ? l10n.ttsSpeaking : l10n.ttsSpeak,
+              ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
               ),
@@ -117,7 +123,7 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
                     }
                   : null,
               icon: const Icon(Icons.stop),
-              label: const Text('Stop'),
+              label: Text(l10n.stop),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
                 backgroundColor: Colors.red.shade400,
@@ -127,9 +133,9 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
             const SizedBox(height: 24),
 
             // Quick test buttons
-            const Text(
-              'Quick Tests:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              l10n.ttsQuickTests,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -137,19 +143,18 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
               runSpacing: 8,
               children: [
                 _QuickTestButton(
-                  label: 'Hello',
-                  text: 'Hello, how are you?',
+                  label: l10n.ttsTestHello,
+                  text: l10n.ttsTestHelloText,
                   voiceService: voiceService,
                 ),
                 _QuickTestButton(
-                  label: 'Numbers',
-                  text: 'One, two, three, four, five',
+                  label: l10n.ttsTestNumbers,
+                  text: l10n.ttsTestNumbersText,
                   voiceService: voiceService,
                 ),
                 _QuickTestButton(
-                  label: 'Long Text',
-                  text:
-                      'This is a longer test to demonstrate how the text to speech engine handles multiple sentences. It should sound natural and clear.',
+                  label: l10n.ttsTestLongText,
+                  text: l10n.ttsTestLongTextContent,
                   voiceService: voiceService,
                 ),
               ],

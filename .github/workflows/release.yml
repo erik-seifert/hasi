@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
     tags:
       - 'v*'
   workflow_dispatch:
@@ -13,7 +14,7 @@ permissions:
 
 jobs:
   build-linux-snap:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +24,10 @@ jobs:
           channel: 'stable'
           cache: true
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libnm-dev libsecret-1-dev libunistring-dev
+          flutter pub get
       - name: Install Snapcraft
         run: sudo snap install snapcraft --classic
       - name: Build Snap
@@ -31,7 +35,7 @@ jobs:
         with:
           timeout_minutes: 20
           max_attempts: 3
-          command: snapcraft pack --destructive-mode
+          command: sudo -E snapcraft pack --destructive-mode
           retry_on: error
       - name: Upload Snap Artifact
         uses: actions/upload-artifact@v4
@@ -40,7 +44,7 @@ jobs:
           path: '*.snap'
 
   build-linux-appimage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -51,7 +55,7 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libnm-dev libsecret-1-dev
+          sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libnm-dev libsecret-1-dev libunistring-dev
       
       - name: Get dependencies
         run: flutter pub get
@@ -142,7 +146,7 @@ jobs:
   release:
     needs: [build-linux-snap, build-linux-appimage, build-windows]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v'))
     steps:
       - uses: actions/checkout@v4
       
@@ -171,8 +175,12 @@ jobs:
         id: find_snap
         run: echo "SNAP_FILE=$(find release_files -name '*.snap' | head -n 1)" >> $GITHUB_ENV
 
+      - name: Install Snapcraft
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        run: sudo snap install snapcraft --classic
+
       - name: Publish to Snap Store
-        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
@@ -180,7 +188,7 @@ jobs:
           command: |
             SNAP_FILE=$(find release_files -name '*.snap' | head -n 1)
             CHANNEL=${{ startsWith(github.ref, 'refs/tags/v') && 'stable' || 'edge' }}
-            snapcraft push $SNAP_FILE --release $CHANNEL --destructive-mode
+            sudo -E snapcraft push $SNAP_FILE --release $CHANNEL --destructive-mode
           retry_on: error
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
