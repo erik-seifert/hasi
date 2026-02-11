@@ -48,6 +48,7 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
     if (response != null) {
       _addMessage(response, false);
     } else {
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       _addMessage(l10n.assistCommandError, false);
     }

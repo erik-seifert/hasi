@@ -191,7 +191,6 @@ class _CustomWidgetConfigDialogState extends State<CustomWidgetConfigDialog> {
   }
 
   Future<void> _pickImage() async {
-    final l10n = AppLocalizations.of(context)!;
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
