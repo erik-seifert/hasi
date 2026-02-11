@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/voice_service.dart';
@@ -47,7 +48,8 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
     if (response != null) {
       _addMessage(response, false);
     } else {
-      _addMessage("I couldn't process that command.", false);
+      final l10n = AppLocalizations.of(context)!;
+      _addMessage(l10n.assistCommandError, false);
     }
 
     setState(() => _isProcessing = false);
@@ -56,6 +58,7 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
   @override
   Widget build(BuildContext context) {
     final voiceService = context.watch<VoiceService>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -77,7 +80,7 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
           ),
           const SizedBox(height: 8),
           Text(
-            "Assist",
+            l10n.assist,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -129,7 +132,7 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
                 child: TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                    hintText: "Type a command...",
+                    hintText: l10n.assistTypeCommand,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -155,7 +158,7 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget> {
                     voiceService.stopListening();
                   } else {
                     voiceService.startListening();
-                    _addMessage("Listening...", false);
+                    _addMessage(l10n.assistListening, false);
                   }
                 },
                 backgroundColor:

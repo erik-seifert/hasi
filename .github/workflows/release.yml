@@ -175,6 +175,10 @@ jobs:
         id: find_snap
         run: echo "SNAP_FILE=$(find release_files -name '*.snap' | head -n 1)" >> $GITHUB_ENV
 
+      - name: Install Snapcraft
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        run: sudo snap install snapcraft --classic
+
       - name: Publish to Snap Store
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
         uses: nick-fields/retry@v3

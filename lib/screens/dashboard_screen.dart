@@ -142,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       dashService.updateDashboard(updated);
                     }
                   : null,
-              tooltip: 'Remove Column',
+              tooltip: l10n.removeColumn,
             ),
             Text(
               '${activeDash.columnCount}',
@@ -165,7 +165,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       dashService.updateDashboard(updated);
                     }
                   : null,
-              tooltip: 'Add Column',
+              tooltip: l10n.addColumn,
             ),
             const VerticalDivider(width: 1, indent: 12, endIndent: 12),
           ],
@@ -270,9 +270,9 @@ class _DashboardScreenState extends State<DashboardScreen>
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Hasi Dashboards',
+                l10n.hasiDashboards,
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
