@@ -118,5 +118,17 @@
   "manualEmpty": "Manuell / Leer",
   "viewRawRequestsResponses": "Rohe Anfragen und Antworten anzeigen",
   "noLogsFound": "Keine Protokolle gefunden",
-  "logDetail": "Protokolldetails"
+  "logDetail": "Protokolldetails",
+  "dashboardSettings": "Dashboard-Einstellungen",
+  "setupDashboards": "Dashboards einrichten",
+  "createDashboards": "Dashboards erstellen",
+  "noAreasFoundSetup": "Keine Bereiche gefunden",
+  "noAreasFoundSetupSub": "Erstellen Sie Bereiche in Home Assistant, um Ihre Entitäten zu organisieren, oder erstellen Sie ein leeres Dashboard, um zu beginnen.",
+  "createEmptyDashboard": "Leeres Dashboard erstellen",
+  "welcomeToHasi": "Willkommen bei Hasi!",
+  "selectAreasToCreateDashboards": "Wählen Sie Bereiche aus, um automatisch Dashboards für jeden zu erstellen.",
+  "areasSelected": "Bereiche ausgewählt",
+  "entity": "Entität",
+  "entities": "Entitäten",
+  "editMode": "Bearbeitungsmodus"
 }

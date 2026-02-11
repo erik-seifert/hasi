@@ -9,6 +9,7 @@
   "create": "Create",
   "logout": "Logout",
   "appearance": "Appearance",
+  "dashboardSettings": "Dashboard Settings",
   "editDashboard": "Edit Dashboard",
   "includedDomains": "Included Domains",
   "specificEntities": "Specific Entities",

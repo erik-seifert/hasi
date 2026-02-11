@@ -118,5 +118,17 @@
   "pleaseEnterUsername": "Veuillez entrer le nom d'utilisateur",
   "pleaseEnterPassword": "Veuillez entrer le mot de passe",
   "loginFailed": "Échec de la connexion",
-  "retry": "Réessayer"
+  "retry": "Réessayer",
+  "dashboardSettings": "Paramètres du tableau de bord",
+  "setupDashboards": "Configurer les tableaux de bord",
+  "createDashboards": "Créer des tableaux de bord",
+  "noAreasFoundSetup": "Aucune zone trouvée",
+  "noAreasFoundSetupSub": "Créez des zones dans Home Assistant pour organiser vos entités, ou créez un tableau de bord vide pour commencer.",
+  "createEmptyDashboard": "Créer un tableau de bord vide",
+  "welcomeToHasi": "Bienvenue sur Hasi !",
+  "selectAreasToCreateDashboards": "Sélectionnez des zones pour créer automatiquement des tableaux de bord pour chacune.",
+  "areasSelected": "zones sélectionnées",
+  "entity": "entité",
+  "entities": "entités",
+  "editMode": "Mode édition"
 }

@@ -162,6 +162,12 @@ abstract class AppLocalizations {
   /// **'Appearance'**
   String get appearance;
 
+  /// No description provided for @dashboardSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard Settings'**
+  String get dashboardSettings;
+
   /// No description provided for @editDashboard.
   ///
   /// In en, this message translates to:

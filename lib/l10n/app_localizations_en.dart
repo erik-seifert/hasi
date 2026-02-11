@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appearance => 'Appearance';
 
   @override
+  String get dashboardSettings => 'Dashboard Settings';
+
+  @override
   String get editDashboard => 'Edit Dashboard';
 
   @override
