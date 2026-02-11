@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/voice_service.dart';
@@ -66,9 +66,8 @@ class _TtsTestWidgetState extends State<TtsTestWidget> {
                         Expanded(
                           child: Text(
                             voiceService.useNativeTts
-                                ? l10n.ttsUsingNative.replaceAll(
-                                    '{engine}',
-                                    voiceService.linuxTtsEngine,
+                                ? l10n.ttsUsingNative(
+                                    voiceService.linuxTtsEngine ?? 'Unknown',
                                   )
                                 : l10n.ttsUsingFallback,
                             style: Theme.of(context).textTheme.bodyMedium,

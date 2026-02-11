@@ -39,6 +39,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appearance => 'Erscheinungsbild';
 
   @override
+  String get dashboardSettings => 'Dashboard-Einstellungen';
+
+  @override
   String get editDashboard => 'Dashboard bearbeiten';
 
   @override
@@ -178,39 +181,39 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das letzte Dashboard kann nicht gelöscht werden. Mindestens ein Dashboard ist erforderlich.';
 
   @override
-  String get setupDashboards => 'Setup Dashboards';
+  String get setupDashboards => 'Dashboards einrichten';
 
   @override
-  String get createDashboards => 'Create Dashboards';
+  String get createDashboards => 'Dashboards erstellen';
 
   @override
-  String get noAreasFoundSetup => 'No Areas Found';
+  String get noAreasFoundSetup => 'Keine Bereiche gefunden';
 
   @override
   String get noAreasFoundSetupSub =>
-      'Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.';
+      'Erstellen Sie Bereiche in Home Assistant, um Ihre Entitäten zu organisieren, oder erstellen Sie ein leeres Dashboard, um zu beginnen.';
 
   @override
-  String get createEmptyDashboard => 'Create Empty Dashboard';
+  String get createEmptyDashboard => 'Leeres Dashboard erstellen';
 
   @override
-  String get welcomeToHasi => 'Welcome to Hasi!';
+  String get welcomeToHasi => 'Willkommen bei Hasi!';
 
   @override
   String get selectAreasToCreateDashboards =>
-      'Select areas to automatically create dashboards for each one.';
+      'Wählen Sie Bereiche aus, um automatisch Dashboards für jeden zu erstellen.';
 
   @override
-  String get areasSelected => 'areas selected';
+  String get areasSelected => 'Bereiche ausgewählt';
 
   @override
-  String get entity => 'entity';
+  String get entity => 'Entität';
 
   @override
-  String get entities => 'entities';
+  String get entities => 'Entitäten';
 
   @override
-  String get editMode => 'Edit Mode';
+  String get editMode => 'Bearbeitungsmodus';
 
   @override
   String get connectToHA => 'Mit Home Assistant verbinden';

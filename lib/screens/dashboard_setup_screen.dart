@@ -275,6 +275,25 @@ class _DashboardSetupScreenState extends State<DashboardSetupScreen> {
             ],
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: OutlinedButton.icon(
+            onPressed: () {
+              // Create a generic empty dashboard
+              context.read<DashboardService>().addDashboard(
+                l10n.dashboard,
+                entityIds: [],
+                columnCount: 2,
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: Text(l10n.createEmptyDashboard),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+        ),
+        const Divider(),
         Expanded(
           child: ListView.builder(
             itemCount: _areas.length,

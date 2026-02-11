@@ -118,5 +118,17 @@
   "pleaseEnterUsername": "Por favor ingrese el nombre de usuario",
   "pleaseEnterPassword": "Por favor ingrese la contraseña",
   "loginFailed": "Error de inicio de sesión",
-  "retry": "Reintentar"
+  "retry": "Reintentar",
+  "dashboardSettings": "Configuración del panel",
+  "setupDashboards": "Configurar paneles",
+  "createDashboards": "Crear paneles",
+  "noAreasFoundSetup": "No se encontraron áreas",
+  "noAreasFoundSetupSub": "Crea áreas en Home Assistant para organizar tus entidades, o crea un panel vacío para empezar.",
+  "createEmptyDashboard": "Crear panel vacío",
+  "welcomeToHasi": "¡Bienvenido a Hasi!",
+  "selectAreasToCreateDashboards": "Selecciona áreas para crear automáticamente paneles para cada una.",
+  "areasSelected": "áreas seleccionadas",
+  "entity": "entidad",
+  "entities": "entidades",
+  "editMode": "Modo edición"
 }

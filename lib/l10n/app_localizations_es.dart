@@ -39,6 +39,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appearance => 'Apariencia';
 
   @override
+  String get dashboardSettings => 'Configuración del panel';
+
+  @override
   String get editDashboard => 'Editar panel';
 
   @override
@@ -177,39 +180,39 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se puede eliminar el último panel. Se requiere al menos un panel.';
 
   @override
-  String get setupDashboards => 'Setup Dashboards';
+  String get setupDashboards => 'Configurar paneles';
 
   @override
-  String get createDashboards => 'Create Dashboards';
+  String get createDashboards => 'Crear paneles';
 
   @override
-  String get noAreasFoundSetup => 'No Areas Found';
+  String get noAreasFoundSetup => 'No se encontraron áreas';
 
   @override
   String get noAreasFoundSetupSub =>
-      'Create areas in Home Assistant to organize your entities, or create an empty dashboard to get started.';
+      'Crea áreas en Home Assistant para organizar tus entidades, o crea un panel vacío para empezar.';
 
   @override
-  String get createEmptyDashboard => 'Create Empty Dashboard';
+  String get createEmptyDashboard => 'Crear panel vacío';
 
   @override
-  String get welcomeToHasi => 'Welcome to Hasi!';
+  String get welcomeToHasi => '¡Bienvenido a Hasi!';
 
   @override
   String get selectAreasToCreateDashboards =>
-      'Select areas to automatically create dashboards for each one.';
+      'Selecciona áreas para crear automáticamente paneles para cada una.';
 
   @override
-  String get areasSelected => 'areas selected';
+  String get areasSelected => 'áreas seleccionadas';
 
   @override
-  String get entity => 'entity';
+  String get entity => 'entidad';
 
   @override
-  String get entities => 'entities';
+  String get entities => 'entidades';
 
   @override
-  String get editMode => 'Edit Mode';
+  String get editMode => 'Modo edición';
 
   @override
   String get connectToHA => 'Conectar a Home Assistant';
