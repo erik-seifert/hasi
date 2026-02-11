@@ -99,7 +99,7 @@ class _AddWidgetScreenState extends State<AddWidgetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Widget'),
+        title: Text(l10n.addWidget),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -137,21 +137,21 @@ class _AddWidgetScreenState extends State<AddWidgetScreen> {
                       Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Text(
-                          'Custom Widgets',
+                          l10n.customWidgets,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ),
                       ListTile(
                         leading: const Icon(Icons.text_fields),
-                        title: const Text('Text Widget'),
-                        subtitle: const Text('Add custom text with formatting'),
+                        title: Text(l10n.textWidget),
+                        subtitle: Text(l10n.textWidgetDescription),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => _addCustomWidget(CustomWidgetType.text),
                       ),
                       ListTile(
                         leading: const Icon(Icons.image),
-                        title: const Text('Image Widget'),
-                        subtitle: const Text('Add an image from your device'),
+                        title: Text(l10n.imageWidget),
+                        subtitle: Text(l10n.imageWidgetDescription),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => _addCustomWidget(CustomWidgetType.image),
                       ),
@@ -162,7 +162,7 @@ class _AddWidgetScreenState extends State<AddWidgetScreen> {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Text(
-                    'Home Assistant Entities',
+                    l10n.homeAssistantEntities,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
